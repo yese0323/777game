@@ -515,7 +515,7 @@ casino_html = """
         let initialBalance = 1000000;
         let balance = 1000000;
         let debt = 0;
-        const MAX_DEBT = 500000; // 🎯 대출 상한선 50만 원 설정
+        const MAX_DEBT = 500000;
         let spins = 0;
         let currentBet = 10000;
         let isAllIn = false;
@@ -636,7 +636,6 @@ casino_html = """
         function getLoan() {
             if (isSpinning) return;
             
-            // 🎯 대출 상한선(50만 원) 체크
             if (debt >= MAX_DEBT) {
                 document.getElementById('status-msg').innerText = "🚨 대출 한도 초과! (최대 50만 원까지 대출 가능합니다)";
                 document.getElementById('status-msg').className = "status-message loss";
@@ -734,29 +733,30 @@ casino_html = """
             let finalResult = [];
             const rand = Math.random();
 
-            if (rand < 0.003) { 
+            // 🎯 777 잭팟 확률 0.001 (0.1%)로 설정
+            if (rand < 0.001) { 
                 finalResult = ['7️⃣', '7️⃣', '7️⃣'];
-            } else if (rand < 0.018) { 
+            } else if (rand < 0.011) { 
                 finalResult = ['💎', '💎', '💎'];
-            } else if (rand < 0.088) { 
+            } else if (rand < 0.081) { 
                 const sym = ['🔔', '🍋', '🍉'][Math.floor(Math.random() * 3)];
                 finalResult = [sym, sym, sym];
-            } else if (rand < 0.208) { 
+            } else if (rand < 0.201) { 
                 finalResult = ['🍒', '🍒', '🍒'];
-            } else if (rand < 0.408) { 
+            } else if (rand < 0.401) { 
                 const sym = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
                 let other;
                 do {
                     other = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
                 } while (other === sym);
                 finalResult = [sym, sym, other].sort(() => Math.random() - 0.5);
-            } else if (rand < 0.588) { 
+            } else if (rand < 0.581) { 
                 let nonCherries = SYMBOLS.filter(s => s !== '🍒');
                 let s1 = nonCherries[Math.floor(Math.random() * nonCherries.length)];
                 let s2 = nonCherries[Math.floor(Math.random() * nonCherries.length)];
                 while (s1 === s2) { s2 = nonCherries[Math.floor(Math.random() * nonCherries.length)]; }
                 finalResult = ['🍒', s1, s2].sort(() => Math.random() - 0.5);
-            } else if (rand < 0.738) { 
+            } else if (rand < 0.731) { 
                 let nonLemons = SYMBOLS.filter(s => s !== '🍋' && s !== '🍒');
                 let s1 = nonLemons[Math.floor(Math.random() * nonLemons.length)];
                 let s2 = nonLemons[Math.floor(Math.random() * nonLemons.length)];

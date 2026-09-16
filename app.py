@@ -38,7 +38,7 @@ casino_html = """
 
         body {
             background-color: var(--bg-dark);
-            /* 실제 카지노 붉은 융단 바닥 및 화려한 네온 조명 분위기 연출 */
+            /* 카지노 붉은 융단 바닥 및 네온 조명 분위기 */
             background-image: 
                 radial-gradient(ellipse at 50% 0%, rgba(140, 20, 80, 0.45) 0%, transparent 70%),
                 radial-gradient(circle at 15% 90%, rgba(200, 30, 30, 0.3) 0%, transparent 40%),
@@ -66,7 +66,7 @@ casino_html = """
             margin-top: 30px;
         }
 
-        /* 머신 본체 (실제 카지노 묵직한 캐비닛 느낌) */
+        /* 머신 본체 (카지노 슬롯 캐비닛) */
         .machine-container {
             position: relative;
             background: linear-gradient(180deg, #2b1d0e 0%, #150d06 40%, #0d0804 100%);
@@ -131,7 +131,7 @@ casino_html = """
             text-shadow: 0 1px 0 #fff, 0 -1px 0 #888;
         }
 
-        /* 실물 인쇄형 유리 페이테이블 (Glass Paytable Display) */
+        /* 유리판 인쇄형 페이테이블 */
         .glass-paytable {
             width: 100%;
             background: linear-gradient(180deg, rgba(15, 10, 25, 0.95), rgba(5, 2, 10, 0.98));
@@ -727,39 +727,49 @@ casino_html = """
             let finalResult = [];
             const rand = Math.random();
 
-            if (rand < 0.002) { 
+            // 🎯 엄격히 제어된 리얼 카지노 확률 분포
+            if (rand < 0.001) { 
+                // 0.1% 확률 : 777 대박 잭팟 (100배)
                 finalResult = ['7️⃣', '7️⃣', '7️⃣'];
-            } else if (rand < 0.01) { 
+            } else if (rand < 0.008) { 
+                // 0.7% 확률 : 다이아몬드 잭팟 (15배)
                 finalResult = ['💎', '💎', '💎'];
             } else if (rand < 0.025) { 
+                // 1.7% 확률 : 일반 심볼 트리플 (3배)
                 const sym = ['🔔', '🍋', '🍉'][Math.floor(Math.random() * 3)];
                 finalResult = [sym, sym, sym];
-            } else if (rand < 0.04) { 
+            } else if (rand < 0.045) { 
+                // 2.0% 확률 : 체리 트리플 (1.5배)
                 finalResult = ['🍒', '🍒', '🍒'];
-            } else if (rand < 0.25) { 
+            } else if (rand < 0.22) { 
+                // 17.5% 확률 : 2개 심볼 일치 (1.1배) -> 3개가 무작위로 다이아로 통일되는 버그 완전 차단
                 const sym = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
-                let other = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
-                while (other === sym) other = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+                let other;
+                do {
+                    other = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+                } while (other === sym);
+                
                 finalResult = [sym, sym, other].sort(() => Math.random() - 0.5);
-            } else if (rand < 0.45) { 
+            } else if (rand < 0.40) { 
+                // 18.0% 확률 : 체리 1개 보너스 환급 (0.4배)
                 let nonCherries = SYMBOLS.filter(s => s !== '🍒');
                 let s1 = nonCherries[Math.floor(Math.random() * nonCherries.length)];
                 let s2 = nonCherries[Math.floor(Math.random() * nonCherries.length)];
+                while (s1 === s2) { s2 = nonCherries[Math.floor(Math.random() * nonCherries.length)]; }
                 finalResult = ['🍒', s1, s2].sort(() => Math.random() - 0.5);
-            } else if (rand < 0.70) { 
+            } else if (rand < 0.60) { 
+                // 20.0% 확률 : 레몬 1개 보너스 환급 (0.2배)
                 let nonLemons = SYMBOLS.filter(s => s !== '🍋' && s !== '🍒');
                 let s1 = nonLemons[Math.floor(Math.random() * nonLemons.length)];
                 let s2 = nonLemons[Math.floor(Math.random() * nonLemons.length)];
+                while (s1 === s2) { s2 = nonLemons[Math.floor(Math.random() * nonLemons.length)]; }
                 finalResult = ['🍋', s1, s2].sort(() => Math.random() - 0.5);
             } else { 
-                let s1 = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
-                let s2 = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
-                let s3 = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
-                while ((s1 === s2) || (s2 === s3) || (s1 === s3) || s1==='🍒' || s2==='🍒' || s3==='🍒' || s1==='🍋' || s2==='🍋' || s3==='🍋') {
-                    s1 = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
-                    s2 = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
-                    s3 = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
-                }
+                // 40.0% 확률 : 완전 꽝 (서로 다른 심볼)
+                let nonBonus = SYMBOLS.filter(s => s !== '🍒' && s !== '🍋');
+                let s1 = nonBonus[Math.floor(Math.random() * nonBonus.length)];
+                let s2 = nonBonus.filter(s => s !== s1)[Math.floor(Math.random() * (nonBonus.length - 1))];
+                let s3 = nonBonus.filter(s => s !== s1 && s !== s2)[Math.floor(Math.random() * (nonBonus.length - 2))];
                 finalResult = [s1, s2, s3];
             }
 

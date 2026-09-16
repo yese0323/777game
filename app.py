@@ -240,7 +240,7 @@ casino_html = """
         }
         .stat-value.debt { color: var(--neon-red); text-shadow: 0 0 8px rgba(255, 0, 85, 0.7); }
 
-        /* 배당표 */
+        /* 배당 안내 */
         .paytable {
             width: 100%;
             background: rgba(0,0,0,0.5);
@@ -350,7 +350,6 @@ casino_html = """
             box-shadow: 0 0 12px rgba(212, 175, 55, 0.6);
         }
 
-        /* 🔥 ALL IN 버튼 전용 스타일 */
         .bet-btn.all-in-btn {
             background: linear-gradient(180deg, #ff0055, #990000);
             border: 1px solid #ff6699;
@@ -428,7 +427,7 @@ casino_html = """
         .loss { color: var(--neon-red); }
         .win { color: var(--neon-green); }
 
-        /* 정산 모달 */
+        /* 정산 결과 모달 스타일 */
         .result-modal {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -457,11 +456,11 @@ casino_html = """
             border-radius: 12px;
             padding: 15px;
             width: 100%;
-            max-width: 350px;
+            max-width: 380px;
             margin-bottom: 20px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 10px;
         }
 
         .result-row {
@@ -471,11 +470,21 @@ casino_html = """
             color: #ccc;
         }
 
+        .result-row.won {
+            color: var(--neon-green);
+            font-weight: bold;
+        }
+
+        .result-row.lost {
+            color: var(--neon-red);
+            font-weight: bold;
+        }
+
         .result-row.final {
             border-top: 1px solid #555;
             padding-top: 8px;
             font-weight: 900;
-            font-size: 1.1rem;
+            font-size: 1.15rem;
         }
 
         .comment-box {
@@ -510,14 +519,16 @@ casino_html = """
                 </div>
             </div>
 
-            <!-- 2. 게임 정산 모달 -->
+            <!-- 2. 게임 정산 결과 모달 (딴 돈 / 잃은 돈 항목 포함) -->
             <div class="result-modal" id="result-modal">
                 <div class="result-title">📊 정산 최종 결과표</div>
                 <div class="result-card">
                     <div class="result-row"><span>시작 자본금:</span><span id="res-init">0원</span></div>
                     <div class="result-row"><span>현재 보유금:</span><span id="res-balance">0원</span></div>
                     <div class="result-row"><span>총 대출금 차감:</span><span id="res-debt" style="color:var(--neon-red);">-0원</span></div>
-                    <div class="result-row final"><span>최종 수령액:</span><span id="res-final" style="color:var(--neon-green);">0원</span></div>
+                    <div class="result-row won"><span>🎉 순수 딴 돈 (+수익):</span><span id="res-won">+0원</span></div>
+                    <div class="result-row lost"><span>💸 순수 잃은 돈 (-손실):</span><span id="res-lost">-0원</span></div>
+                    <div class="result-row final"><span>최종 손익 수령액:</span><span id="res-final">0원</span></div>
                 </div>
                 <div class="comment-box" id="res-comment">평가 중...</div>
                 <button class="setup-btn" onclick="location.reload()" style="width:200px;">🔄 다시 도전하기</button>
@@ -556,7 +567,7 @@ casino_html = """
                 <div class="reel-window"><div class="reel-strip" id="reel-2"><div class="symbol">🎰</div></div></div>
             </div>
 
-            <!-- 컨트롤 영역 (ALL IN 추가) -->
+            <!-- 컨트롤 영역 -->
             <div class="controls-panel">
                 <div class="bet-selector">
                     <button class="bet-btn active" onclick="setBet(10000, this)">1만</button>
@@ -594,6 +605,10 @@ casino_html = """
         let currentBet = 10000;
         let isAllIn = false;
         let isSpinning = false;
+
+        // 딴 돈 / 잃은 돈 기록 변수
+        let totalWon = 0;
+        let totalLost = 0;
 
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         
@@ -654,6 +669,8 @@ casino_html = """
             balance = val;
             debt = 0;
             spins = 0;
+            totalWon = 0;
+            totalLost = 0;
             updateDisplay();
             document.getElementById('setup-modal').style.display = 'none';
             document.getElementById('status-msg').innerText = "행운을 빕니다! SPIN 버튼이나 레버를 당기세요.";
@@ -669,7 +686,6 @@ casino_html = """
             document.getElementById('status-msg').innerText = `베팅금이 ${amount.toLocaleString()}원으로 설정되었습니다.`;
         }
 
-        // 🔥 ALL IN 전액 배팅 설정
         function setAllIn(btn) {
             if (isSpinning) return;
             if (balance <= 0) {
@@ -707,6 +723,7 @@ casino_html = """
             document.getElementById('status-msg').className = "status-message";
         }
 
+        /* 딴 돈 / 잃은 돈 명확히 계산하여 출력하는 정산 함수 */
         function cashOut() {
             if (isSpinning) return;
             const finalPayout = balance - debt;
@@ -714,7 +731,16 @@ casino_html = """
             document.getElementById('res-init').innerText = initialBalance.toLocaleString() + '원';
             document.getElementById('res-balance').innerText = balance.toLocaleString() + '원';
             document.getElementById('res-debt').innerText = '-' + debt.toLocaleString() + '원';
-            document.getElementById('res-final').innerText = finalPayout.toLocaleString() + '원';
+            document.getElementById('res-won').innerText = '+' + totalWon.toLocaleString() + '원';
+            document.getElementById('res-lost').innerText = '-' + totalLost.toLocaleString() + '원';
+            
+            const resFinalEl = document.getElementById('res-final');
+            resFinalEl.innerText = finalPayout.toLocaleString() + '원';
+            if (finalPayout >= initialBalance) {
+                resFinalEl.style.color = "var(--neon-green)";
+            } else {
+                resFinalEl.style.color = "var(--neon-red)";
+            }
 
             let comment = "";
             const profit = finalPayout - initialBalance;
@@ -756,7 +782,12 @@ casino_html = """
 
         function spin() {
             isSpinning = true;
-            balance -= currentBet;
+            
+            // 베팅금 차감 -> 잃은 돈 기록
+            const betPlaced = currentBet;
+            balance -= betPlaced;
+            totalLost += betPlaced;
+            
             spins++;
             updateDisplay();
 
@@ -855,9 +886,12 @@ casino_html = """
                     }
 
                     if (winMultiplier > 0) {
-                        const winAmount = Math.floor(currentBet * winMultiplier);
+                        const winAmount = Math.floor(betPlaced * winMultiplier);
                         balance += winAmount;
                         
+                        // 딴 돈 누적 기록
+                        totalWon += winAmount;
+
                         if (winMultiplier >= 3) playSound('win');
                         else playSound('small_win');
 
@@ -872,7 +906,6 @@ casino_html = """
                         document.getElementById('status-msg').className = "status-message loss";
                     }
 
-                    // 올인 상태에서 꽝이면 일반 금액 선택으로 복귀
                     if (isAllIn && balance === 0) {
                         isAllIn = false;
                         document.querySelectorAll('.bet-btn').forEach(b => b.classList.remove('active'));

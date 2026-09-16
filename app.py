@@ -69,12 +69,12 @@ casino_html = """
         }
 
         .subtitle {
-            color: var(--neon-green);
+            color: var(--gold-light);
             font-weight: 700;
             font-size: 0.95rem;
             text-align: center;
             margin-bottom: 25px;
-            text-shadow: 0 0 10px rgba(0, 255, 102, 0.6);
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
             letter-spacing: 1px;
         }
 
@@ -319,7 +319,7 @@ casino_html = """
 <body>
 
     <div class="casino-title">🎰 CASINO 777 🎰</div>
-    <div class="subtitle">✨ 당첨 확률 대폭 UP! 모든 이모티콘 3개 일치 시 당첨!</div>
+    <div class="subtitle">🎰 최고의 몰입감! 짜릿한 승부의 슬롯머신</div>
 
     <div class="machine-container">
         <!-- 상단 스탯 전광판 -->
@@ -336,11 +336,11 @@ casino_html = """
 
         <!-- 배당 안내 -->
         <div class="paytable">
-            <div>7️⃣7️⃣7️⃣ <span>50배</span></div>
-            <div>💎💎💎 <span>10배</span></div>
+            <div>7️⃣7️⃣7️⃣ <span>100배</span></div>
+            <div>💎💎💎 <span>15배</span></div>
             <div>🔔/🍋/🍉 <span>3배</span></div>
             <div>🍒🍒🍒 <span>1.5배</span></div>
-            <div>🍒🍒? (체리2개) <span>1.1배</span></div>
+            <div>2개 일치 <span>1.1배</span></div>
         </div>
 
         <!-- 3개 릴 스롯 하우징 -->
@@ -468,34 +468,45 @@ casino_html = """
             document.getElementById('status-msg').innerText = "🎰 릴 회전 중...";
             document.getElementById('status-msg').className = "status-message";
 
-            // 높은 당첨 확률 로직 설정 (체험용 높은 승률)
+            // [정교한 호구 잡기 로직 - RTP ~ 75%]
             let finalResult = [];
             const rand = Math.random();
 
-            if (rand < 0.01) { 
-                // 1% - 대잭팟 777 (50배)
+            if (rand < 0.002) { 
+                // 0.2% - 잭팟 777 (100배)
                 finalResult = ['7️⃣', '7️⃣', '7️⃣'];
-            } else if (rand < 0.05) { 
-                // 4% - 다이아몬드 3개 (10배)
+            } else if (rand < 0.01) { 
+                // 0.8% - 다이아몬드 3개 (15배)
                 finalResult = ['💎', '💎', '💎'];
-            } else if (rand < 0.15) { 
-                // 10% - 종/레몬/수박 중 3개 일치 (3배)
+            } else if (rand < 0.025) { 
+                // 1.5% - 일반 아이콘 3개 (3배)
                 const sym = ['🔔', '🍋', '🍉'][Math.floor(Math.random() * 3)];
                 finalResult = [sym, sym, sym];
-            } else if (rand < 0.30) { 
-                // 15% - 체리 3개 일치 (1.5배)
+            } else if (rand < 0.04) { 
+                // 1.5% - 체리 3개 (1.5배)
                 finalResult = ['🍒', '🍒', '🍒'];
-            } else if (rand < 0.65) { 
-                // 35% - 소액 보너스: 체리 2개 포함 (1.1배) -> 자주 당첨됨!
-                finalResult = ['🍒', '🍒', SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)]];
-                // 섞어주기
-                finalResult.sort(() => Math.random() - 0.5);
+            } else if (rand < 0.32) { 
+                // 28% - 미끼용 1.1배 소액 환급 (2개 일치)
+                const sym = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+                let other = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+                while (other === sym) other = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+                finalResult = [sym, sym, other].sort(() => Math.random() - 0.5);
+            } else if (rand < 0.70) { 
+                // 38% - 심리 자극용 아까운 연출 (2개 맞고 1개 틀림) -> 배당은 0원!
+                const sym = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+                let other = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+                while (other === sym) other = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+                // 2개를 앞에 두고 마지막만 다르게 배치해 극적 효과 연출
+                finalResult = [sym, sym, other];
             } else { 
-                // 35% - 꽝
+                // 30% - 완전 꽝
                 let s1 = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
                 let s2 = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
                 let s3 = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
-                while (s1 === s2 && s2 === s3) s3 = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+                while ((s1 === s2) || (s2 === s3) || (s1 === s3)) {
+                    s2 = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+                    s3 = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+                }
                 finalResult = [s1, s2, s3];
             }
 
@@ -538,11 +549,11 @@ casino_html = """
                     let winText = "";
 
                     if (finalResult[0] === '7️⃣' && finalResult[1] === '7️⃣' && finalResult[2] === '7️⃣') {
-                        winMultiplier = 50;
-                        winText = "🎉 GRAND JACKPOT! 777 대박! (50배)";
+                        winMultiplier = 100;
+                        winText = "🎉 GRAND JACKPOT! 777 대박! (100배)";
                     } else if (finalResult[0] === '💎' && finalResult[1] === '💎' && finalResult[2] === '💎') {
-                        winMultiplier = 10;
-                        winText = "💎 DIAMOND JACKPOT! (10배)";
+                        winMultiplier = 15;
+                        winText = "💎 DIAMOND JACKPOT! (15배)";
                     } else if (finalResult[0] === finalResult[1] && finalResult[1] === finalResult[2]) {
                         if (finalResult[0] === '🍒') {
                             winMultiplier = 1.5;
@@ -552,11 +563,10 @@ casino_html = """
                             winText = `${finalResult[0]} 트리플 당첨! (3배)`;
                         }
                     } else {
-                        // 체리 2개 보너스 체크 (1.1배)
-                        const cherryCount = finalResult.filter(s => s === '🍒').length;
-                        if (cherryCount >= 2) {
+                        // 2개 일치 보너스 체크 (rand 조건에서 32% 내였을 때만 인정)
+                        if (rand < 0.32) {
                             winMultiplier = 1.1;
-                            winText = "🍒 체리 2개 보너스 당첨! (1.1배)";
+                            winText = "✨ 2개 심볼 연결 보너스! (1.1배)";
                         }
                     }
 
@@ -570,7 +580,11 @@ casino_html = """
                         document.getElementById('status-msg').innerText = `${winText} (+${winAmount.toLocaleString()}원)`;
                         document.getElementById('status-msg').className = "status-message win";
                     } else {
-                        document.getElementById('status-msg').innerText = "💸 아깝게 꽝! 다음 기회에...";
+                        if (finalResult[0] === finalResult[1]) {
+                            document.getElementById('status-msg').innerText = "😱 아깝다! 한 끗 차이로 꽝!";
+                        } else {
+                            document.getElementById('status-msg').innerText = "💸 꽝입니다! 다음 스핀에 잭팟을 노려보세요.";
+                        }
                         document.getElementById('status-msg').className = "status-message loss";
                     }
                     updateDisplay();

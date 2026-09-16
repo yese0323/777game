@@ -1,7 +1,7 @@
 import streamlit as st
 import streamlit.components.v1 as components
 
-# Streamlit 페이지 설정 (와이드 레이아웃 및 다크 테마 적용)
+# Streamlit 페이지 설정
 st.set_page_config(
     page_title="🎰 라스베이거스 777 카지노 슬롯머신",
     page_icon="🎰",
@@ -69,12 +69,12 @@ casino_html = """
         }
 
         .subtitle {
-            color: var(--neon-red);
+            color: var(--neon-green);
             font-weight: 700;
             font-size: 0.95rem;
             text-align: center;
             margin-bottom: 25px;
-            text-shadow: 0 0 10px rgba(255, 0, 85, 0.6);
+            text-shadow: 0 0 10px rgba(0, 255, 102, 0.6);
             letter-spacing: 1px;
         }
 
@@ -104,7 +104,7 @@ casino_html = """
             border: 3px solid var(--gold-dark);
             border-radius: 12px;
             padding: 12px;
-            margin-bottom: 25px;
+            margin-bottom: 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -130,6 +130,22 @@ casino_html = """
             color: var(--neon-gold);
             text-shadow: 0 0 8px rgba(255, 204, 0, 0.7);
         }
+
+        /* 배당표 안내판 */
+        .paytable {
+            width: 100%;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid var(--gold-dark);
+            border-radius: 8px;
+            padding: 8px;
+            margin-bottom: 15px;
+            font-size: 0.75rem;
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            color: #ddd;
+        }
+        .paytable span { color: var(--gold-light); font-weight: bold; }
 
         /* 릴 하우징 */
         .reels-frame {
@@ -178,7 +194,6 @@ casino_html = """
             display: flex;
             flex-direction: column;
             align-items: center;
-            transition: transform 0.1s linear;
         }
 
         .symbol {
@@ -304,7 +319,7 @@ casino_html = """
 <body>
 
     <div class="casino-title">🎰 CASINO 777 🎰</div>
-    <div class="subtitle">🚨 환급률(RTP) 5% 미만 극악의 카지노 로직 적용 중</div>
+    <div class="subtitle">✨ 당첨 확률 대폭 UP! 모든 이모티콘 3개 일치 시 당첨!</div>
 
     <div class="machine-container">
         <!-- 상단 스탯 전광판 -->
@@ -317,6 +332,15 @@ casino_html = """
                 <div class="stat-label">스핀 횟수 (SPINS)</div>
                 <div class="stat-value" id="spin-count">0</div>
             </div>
+        </div>
+
+        <!-- 배당 안내 -->
+        <div class="paytable">
+            <div>7️⃣7️⃣7️⃣ <span>50배</span></div>
+            <div>💎💎💎 <span>10배</span></div>
+            <div>🔔/🍋/🍉 <span>3배</span></div>
+            <div>🍒🍒🍒 <span>1.5배</span></div>
+            <div>🍒🍒? (체리2개) <span>1.1배</span></div>
         </div>
 
         <!-- 3개 릴 스롯 하우징 -->
@@ -358,13 +382,12 @@ casino_html = """
     </div>
 
     <script>
-        const SYMBOLS = ['7️⃣', '💎', '🔔', '🍋', '🍒', '🍇', '🍉'];
+        const SYMBOLS = ['7️⃣', '💎', '🔔', '🍋', '🍒', '🍉'];
         let balance = 10000;
         let spins = 0;
         let currentBet = 1000;
         let isSpinning = false;
 
-        // 사운드 생성기 (Web Audio API)
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         
         function playSound(type) {
@@ -389,6 +412,13 @@ casino_html = """
                 gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
                 osc.start();
                 osc.stop(audioCtx.currentTime + 0.4);
+            } else if (type === 'small_win') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.2);
             } else if (type === 'loan') {
                 osc.type = 'square';
                 osc.frequency.setValueAtTime(300, audioCtx.currentTime);
@@ -438,24 +468,30 @@ casino_html = """
             document.getElementById('status-msg').innerText = "🎰 릴 회전 중...";
             document.getElementById('status-msg').className = "status-message";
 
-            // 극악의 집 통계 로직 (House Edge: ~95%)
+            // 높은 당첨 확률 로직 설정 (체험용 높은 승률)
             let finalResult = [];
             const rand = Math.random();
 
-            if (rand < 0.001) { 
-                // 0.1% 대잭팟 (777)
+            if (rand < 0.01) { 
+                // 1% - 대잭팟 777 (50배)
                 finalResult = ['7️⃣', '7️⃣', '7️⃣'];
-            } else if (rand < 0.03) { 
-                // 2.9% 소액 당첨 (체리 3개)
+            } else if (rand < 0.05) { 
+                // 4% - 다이아몬드 3개 (10배)
+                finalResult = ['💎', '💎', '💎'];
+            } else if (rand < 0.15) { 
+                // 10% - 종/레몬/수박 중 3개 일치 (3배)
+                const sym = ['🔔', '🍋', '🍉'][Math.floor(Math.random() * 3)];
+                finalResult = [sym, sym, sym];
+            } else if (rand < 0.30) { 
+                // 15% - 체리 3개 일치 (1.5배)
                 finalResult = ['🍒', '🍒', '🍒'];
-            } else if (rand < 0.45) { 
-                // 42% 아깝게 2개 맞고 1개 틀리는 연출 (심리적 트릭)
-                const sym = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
-                let other = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
-                while (other === sym) other = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
-                finalResult = [sym, sym, other];
+            } else if (rand < 0.65) { 
+                // 35% - 소액 보너스: 체리 2개 포함 (1.1배) -> 자주 당첨됨!
+                finalResult = ['🍒', '🍒', SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)]];
+                // 섞어주기
+                finalResult.sort(() => Math.random() - 0.5);
             } else { 
-                // 55% 완전 꽝
+                // 35% - 꽝
                 let s1 = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
                 let s2 = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
                 let s3 = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
@@ -484,34 +520,57 @@ casino_html = """
                     }
                 }
 
-                if (counter > 15) stops[0] = true;
-                if (counter > 25) stops[1] = true;
-                if (counter > 35) stops[2] = true;
+                if (counter > 12) stops[0] = true;
+                if (counter > 20) stops[1] = true;
+                if (counter > 28) stops[2] = true;
 
                 if (stops[0]) reelStrips[0].innerHTML = `<div class="symbol">${finalResult[0]}</div>`;
                 if (stops[1]) reelStrips[1].innerHTML = `<div class="symbol">${finalResult[1]}</div>`;
                 if (stops[2]) reelStrips[2].innerHTML = `<div class="symbol">${finalResult[2]}</div>`;
 
-                if (counter > 35) {
+                if (counter > 28) {
                     clearInterval(interval);
                     isSpinning = false;
                     document.getElementById('spin-button').disabled = false;
 
-                    // 당첨 판정
+                    // 당첨 판정 및 배당 계산
+                    let winMultiplier = 0;
+                    let winText = "";
+
                     if (finalResult[0] === '7️⃣' && finalResult[1] === '7️⃣' && finalResult[2] === '7️⃣') {
-                        const win = currentBet * 100;
-                        balance += win;
-                        playSound('win');
-                        document.getElementById('status-msg').innerText = `🎉 대잭팟 발생!! 777 축하합니다! (+${win.toLocaleString()}원)`;
-                        document.getElementById('status-msg').className = "status-message win";
+                        winMultiplier = 50;
+                        winText = "🎉 GRAND JACKPOT! 777 대박! (50배)";
+                    } else if (finalResult[0] === '💎' && finalResult[1] === '💎' && finalResult[2] === '💎') {
+                        winMultiplier = 10;
+                        winText = "💎 DIAMOND JACKPOT! (10배)";
                     } else if (finalResult[0] === finalResult[1] && finalResult[1] === finalResult[2]) {
-                        const win = currentBet * 5;
-                        balance += win;
-                        playSound('win');
-                        document.getElementById('status-msg').innerText = `🍒 당첨! (+${win.toLocaleString()}원)`;
+                        if (finalResult[0] === '🍒') {
+                            winMultiplier = 1.5;
+                            winText = "🍒 체리 3개 당첨! (1.5배)";
+                        } else {
+                            winMultiplier = 3;
+                            winText = `${finalResult[0]} 트리플 당첨! (3배)`;
+                        }
+                    } else {
+                        // 체리 2개 보너스 체크 (1.1배)
+                        const cherryCount = finalResult.filter(s => s === '🍒').length;
+                        if (cherryCount >= 2) {
+                            winMultiplier = 1.1;
+                            winText = "🍒 체리 2개 보너스 당첨! (1.1배)";
+                        }
+                    }
+
+                    if (winMultiplier > 0) {
+                        const winAmount = Math.floor(currentBet * winMultiplier);
+                        balance += winAmount;
+                        
+                        if (winMultiplier >= 3) playSound('win');
+                        else playSound('small_win');
+
+                        document.getElementById('status-msg').innerText = `${winText} (+${winAmount.toLocaleString()}원)`;
                         document.getElementById('status-msg').className = "status-message win";
                     } else {
-                        document.getElementById('status-msg').innerText = "💸 꽝입니다! 하우스가 당신의 돈을 챙겼습니다.";
+                        document.getElementById('status-msg').innerText = "💸 아깝게 꽝! 다음 기회에...";
                         document.getElementById('status-msg').className = "status-message loss";
                     }
                     updateDisplay();
@@ -524,4 +583,4 @@ casino_html = """
 """
 
 # Streamlit 내부에 렌더링
-components.html(casino_html, height=750, scrolling=False)
+components.html(casino_html, height=780, scrolling=False)

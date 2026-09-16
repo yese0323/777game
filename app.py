@@ -126,7 +126,6 @@ casino_html = """
             text-shadow: 0 1px 0 #fff, 0 -1px 0 #888;
         }
 
-        /* 🎯 확률을 숨기고 새로운 배율(2배, 1.4배)을 반영한 배당표 UI */
         .glass-paytable {
             width: 100%;
             background: linear-gradient(180deg, rgba(15, 10, 25, 0.95), rgba(5, 2, 10, 0.98));
@@ -412,7 +411,7 @@ casino_html = """
                 <div class="marquee-title">KING 777 JACKPOT</div>
             </div>
 
-            <!-- 🎯 확률 표기를 숨기고 2배, 1.4배 배당만 깔끔하게 노출하는 배당표 UI -->
+            <!-- 배당표 UI (확률 숨김, 종/레몬/수박 2배, 체리 1.4배) -->
             <div class="glass-paytable">
                 <div class="pay-item"><span class="syms">7️⃣7️⃣7️⃣</span><span class="mult">100배</span></div>
                 <div class="pay-item"><span class="syms">💎💎💎</span><span class="mult">7배</span></div>
@@ -444,7 +443,8 @@ casino_html = """
                 <div class="result-card">
                     <div class="result-row"><span>시작 자본금:</span><span id="res-init">0원</span></div>
                     <div class="result-row"><span>현재 보유금:</span><span id="res-balance">0원</span></div>
-                    <div class="result-row"><span>총 대출금 차감:</span><span id="res-debt" style="color:var(--neon-red);">-0원</span></div>
+                    <div class="result-row"><span>대출 원금:</span><span id="res-debt">0원</span></div>
+                    <div class="result-row lost"><span>💸 사채 이자 (5%):</span><span id="res-interest">+0원</span></div>
                     <div class="result-row won"><span>🎉 순수 딴 돈 (+수익):</span><span id="res-won">+0원</span></div>
                     <div class="result-row lost"><span>💸 순수 잃은 돈 (-손실):</span><span id="res-lost">-0원</span></div>
                     <div class="result-row final"><span>최종 손익 수령액:</span><span id="res-final">0원</span></div>
@@ -485,10 +485,10 @@ casino_html = """
 
                 <div class="action-btns">
                     <button class="spin-btn" id="spin-button" onclick="pullLeverAndSpin()">SPIN!</button>
-                    <button class="loan-btn" onclick="getLoan()">💵 대출 (10만)</button>
+                    <button class="loan-btn" onclick="getLoan()">💵 대출 (10만 + 이자)</button>
                 </div>
 
-                <button class="cashout-btn" onclick="cashOut()">💵 돈 출금 & 정산 완료하기</button>
+                <button class="cashout-btn" onclick="cashOut()">💵 돈 출금 & 이자 정산 완료하기</button>
             </div>
 
             <div class="status-message" id="status-msg">시작 자본금을 설정해 주세요.</div>
@@ -629,20 +629,25 @@ casino_html = """
             if (isSpinning) return;
             const loanAmount = 100000;
             balance += loanAmount;
-            debt += loanAmount;
+            debt += loanAmount; // 대출 원금 누적
             updateDisplay();
             playSound('loan');
-            document.getElementById('status-msg').innerText = "💵 긴급 대출 100,000원이 승인되었습니다!";
-            document.getElementById('status-msg').className = "status-message";
+            document.getElementById('status-msg').innerText = "💵 긴급 대출 100,000원 승인! (최종 정산 시 5% 이자 가산)";
+            document.getElementById('status-msg').className = "status-message loss";
         }
 
         function cashOut() {
             if (isSpinning) return;
-            const finalPayout = balance - debt;
+            
+            // 🎯 대출금의 5% 이자 계산 및 총 상환금 산정
+            const interest = Math.floor(debt * 0.05);
+            const totalDebtWithInterest = debt + interest;
+            const finalPayout = balance - totalDebtWithInterest;
             
             document.getElementById('res-init').innerText = initialBalance.toLocaleString() + '원';
             document.getElementById('res-balance').innerText = balance.toLocaleString() + '원';
-            document.getElementById('res-debt').innerText = '-' + debt.toLocaleString() + '원';
+            document.getElementById('res-debt').innerText = debt.toLocaleString() + '원';
+            document.getElementById('res-interest').innerText = '+' + interest.toLocaleString() + '원 (5%)';
             document.getElementById('res-won').innerText = '+' + totalWon.toLocaleString() + '원';
             document.getElementById('res-lost').innerText = '-' + totalLost.toLocaleString() + '원';
             
@@ -658,15 +663,15 @@ casino_html = """
             const profit = finalPayout - initialBalance;
 
             if (finalPayout < 0) {
-                comment = "💀 대출금도 못 갚고 파산하셨습니다... 영장 발부 예정입니다.";
+                comment = "💀 5% 이자 폭탄을 맞고 사채업자에게 끌려갑니다...";
             } else if (profit > initialBalance) {
-                comment = "🎉 대박! 카지노를 털어버리셨습니다. 즉시 현금화하세요!";
+                comment = "🎉 이자까지 완벽하게 갚고 카지노를 털어버리셨습니다!";
             } else if (profit > 0) {
-                comment = "👍 소소하게 이득을 보셨네요! 현명한 퇴장입니다.";
+                comment = "👍 이자 내고도 소소하게 이득을 보셨네요!";
             } else if (profit === 0) {
-                comment = "😐 본전치기! 하우스에 봉사 활동 하셨습니다.";
+                comment = "😐 본전치기이지만 이자 때문에 사채업자 손해!";
             } else {
-                comment = "💸 탕진 완료! 다음엔 대출받지 말고 재도전해 보세요.";
+                comment = "💸 빚더미에 앉았습니다! 다음엔 대출을 멀리하세요.";
             }
 
             document.getElementById('res-comment').innerText = comment;
@@ -709,45 +714,35 @@ casino_html = """
             let finalResult = [];
             const rand = Math.random();
 
-            // 🎯 전체적으로 확률을 조금씩 더 높이고, 꽝 비율을 낮춘 알고리즘 설정
             if (rand < 0.003) { 
-                // 0.3% : 777 대박 잭팟 (100배)
                 finalResult = ['7️⃣', '7️⃣', '7️⃣'];
             } else if (rand < 0.018) { 
-                // 1.5% : 다이아몬드 잭팟 (7배)
                 finalResult = ['💎', '💎', '💎'];
             } else if (rand < 0.088) { 
-                // 7.0% : 종, 레몬, 수박 트리플 (2배) 🎯
                 const sym = ['🔔', '🍋', '🍉'][Math.floor(Math.random() * 3)];
                 finalResult = [sym, sym, sym];
             } else if (rand < 0.208) { 
-                // 12.0% : 체리 3개 (1.4배) 🎯
                 finalResult = ['🍒', '🍒', '🍒'];
             } else if (rand < 0.408) { 
-                // 20.0% : 2개 심볼 일치 (1.1배) 🎯
                 const sym = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
                 let other;
                 do {
                     other = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
                 } while (other === sym);
-                
                 finalResult = [sym, sym, other].sort(() => Math.random() - 0.5);
             } else if (rand < 0.588) { 
-                // 18.0% : 체리 1개 보너스 환급 (0.4배) 🎯
                 let nonCherries = SYMBOLS.filter(s => s !== '🍒');
                 let s1 = nonCherries[Math.floor(Math.random() * nonCherries.length)];
                 let s2 = nonCherries[Math.floor(Math.random() * nonCherries.length)];
                 while (s1 === s2) { s2 = nonCherries[Math.floor(Math.random() * nonCherries.length)]; }
                 finalResult = ['🍒', s1, s2].sort(() => Math.random() - 0.5);
             } else if (rand < 0.738) { 
-                // 15.0% : 레몬 1개 보너스 환급 (0.2배) 🎯
                 let nonLemons = SYMBOLS.filter(s => s !== '🍋' && s !== '🍒');
                 let s1 = nonLemons[Math.floor(Math.random() * nonLemons.length)];
                 let s2 = nonLemons[Math.floor(Math.random() * nonLemons.length)];
                 while (s1 === s2) { s2 = nonLemons[Math.floor(Math.random() * nonLemons.length)]; }
                 finalResult = ['🍋', s1, s2].sort(() => Math.random() - 0.5);
             } else { 
-                // 26.2% : 완전 꽝 (대폭 축소하여 당첨 빈도 상향) 🎯
                 let nonBonus = SYMBOLS.filter(s => s !== '🍒' && s !== '🍋');
                 let s1 = nonBonus[Math.floor(Math.random() * nonBonus.length)];
                 let s2 = nonBonus.filter(s => s !== s1)[Math.floor(Math.random() * (nonBonus.length - 1))];
@@ -792,7 +787,6 @@ casino_html = """
                     let winText = "";
                     let isPayback = false;
 
-                    // 🎯 배당 적용 로직 (종, 레몬, 수박 2배 / 체리 3개 1.4배)
                     if (finalResult[0] === '7️⃣' && finalResult[1] === '7️⃣' && finalResult[2] === '7️⃣') {
                         winMultiplier = 100;
                         winText = "🎉 GRAND JACKPOT! 777 대박! (100배)";

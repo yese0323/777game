@@ -55,7 +55,7 @@ casino_html = """
 
         .casino-title {
             font-family: 'Orbitron', 'Noto Sans KR', sans-serif;
-            font-size: 2.5rem;
+            font-size: 2.3rem;
             font-weight: 900;
             text-align: center;
             background: linear-gradient(180deg, #fff 0%, var(--gold-mid) 50%, var(--gold-shadow) 100%);
@@ -69,14 +69,24 @@ casino_html = """
         .subtitle {
             color: var(--gold-light);
             font-weight: 700;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             text-align: center;
             margin-bottom: 20px;
             text-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
             letter-spacing: 1px;
         }
 
-        /* 머신 컨테이너 */
+        /* 슬롯 머신 전체 래퍼 (레버 배치를 위해 relative) */
+        .machine-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 720px;
+        }
+
+        /* 머신 본체 */
         .machine-container {
             position: relative;
             background: linear-gradient(145deg, #2c2114, #110b06);
@@ -87,15 +97,69 @@ casino_html = """
                 0 0 40px rgba(212, 175, 55, 0.3),
                 inset 0 0 20px rgba(0,0,0,0.8),
                 0 20px 50px rgba(0,0,0,0.9);
-            padding: 25px 35px;
+            padding: 25px 30px;
             width: 100%;
-            max-width: 640px;
+            max-width: 620px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            z-index: 2;
         }
 
-        /* 초기 설정 모달/오버레이 */
+        /* === 아케이드 3D 레버 컴포넌트 === */
+        .lever-container {
+            position: absolute;
+            right: -55px;
+            top: 140px;
+            width: 60px;
+            height: 280px;
+            z-index: 1;
+            cursor: pointer;
+        }
+
+        .lever-base {
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            width: 35px;
+            height: 70px;
+            background: linear-gradient(90deg, #444, #888, #222);
+            border-radius: 0 12px 12px 0;
+            border: 2px solid var(--gold-dark);
+            box-shadow: 3px 5px 10px rgba(0,0,0,0.7);
+        }
+
+        .lever-arm {
+            position: absolute;
+            bottom: 60px;
+            left: 10px;
+            width: 16px;
+            height: 180px;
+            background: linear-gradient(90deg, #bbb, #fff, #777);
+            border-radius: 8px;
+            transform-origin: bottom center;
+            transition: transform 0.15s ease-in;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+        }
+
+        .lever-ball {
+            position: absolute;
+            top: -25px;
+            left: -17px;
+            width: 50px;
+            height: 50px;
+            background: radial-gradient(circle at 30% 30%, #ff5555, #990000);
+            border-radius: 50%;
+            box-shadow: inset -3px -3px 8px rgba(0,0,0,0.6), 0 5px 12px rgba(255,0,0,0.5);
+            border: 2px solid #ff9999;
+        }
+
+        /* 레버 당기는 애니메이션 클래스 */
+        .lever-arm.pulled {
+            transform: rotateX(75deg) scaleY(0.5);
+        }
+
+        /* 초기 설정 모달 */
         .setup-modal {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -407,88 +471,99 @@ casino_html = """
 <body>
 
     <div class="casino-title">🎰 CASINO 777 🎰</div>
-    <div class="subtitle">🎰 초고액 배팅 연출! 정산 및 대출 상환 기능 탑재</div>
+    <div class="subtitle">🕹️ 우측 레버를 직접 당기거나 SPIN 버튼을 누르세요!</div>
 
-    <div class="machine-container">
-        <!-- 1. 초기 자본금 설정 모달 -->
-        <div class="setup-modal" id="setup-modal">
-            <div class="setup-title">💰 시작 보유 금액 설정</div>
-            <p style="color:#aaa; font-size:0.85rem; margin-bottom:15px;">시작할 때 사용할 자본금을 선택하거나 입력하세요.</p>
-            <div class="setup-input-group">
-                <div class="preset-btns">
-                    <button class="preset-btn" onclick="setPreset(100000)">10 만원</button>
-                    <button class="preset-btn" onclick="setPreset(500000)">50 만원</button>
-                    <button class="preset-btn" onclick="setPreset(1000000)">100 만원</button>
-                    <button class="preset-btn" onclick="setPreset(5000000)">500 만원</button>
+    <div class="machine-wrapper">
+        <!-- 메인 슬롯머신 -->
+        <div class="machine-container">
+            <!-- 1. 초기 자본금 설정 모달 -->
+            <div class="setup-modal" id="setup-modal">
+                <div class="setup-title">💰 시작 보유 금액 설정</div>
+                <p style="color:#aaa; font-size:0.85rem; margin-bottom:15px;">시작할 때 사용할 자본금을 선택하거나 입력하세요.</p>
+                <div class="setup-input-group">
+                    <div class="preset-btns">
+                        <button class="preset-btn" onclick="setPreset(100000)">10 만원</button>
+                        <button class="preset-btn" onclick="setPreset(500000)">50 만원</button>
+                        <button class="preset-btn" onclick="setPreset(1000000)">100 만원</button>
+                        <button class="preset-btn" onclick="setPreset(5000000)">500 만원</button>
+                    </div>
+                    <input type="number" id="init-balance-input" value="1000000" style="padding:10px; border-radius:6px; border:1px solid var(--gold-dark); background:#000; color:#fff; text-align:center; font-size:1.1rem; font-weight:bold;">
+                    <button class="setup-btn" onclick="startGame()">게 임 시 작</button>
                 </div>
-                <input type="number" id="init-balance-input" value="1000000" style="padding:10px; border-radius:6px; border:1px solid var(--gold-dark); background:#000; color:#fff; text-align:center; font-size:1.1rem; font-weight:bold;">
-                <button class="setup-btn" onclick="startGame()">게 임 시 작</button>
             </div>
+
+            <!-- 2. 게임 정산 결과 모달 -->
+            <div class="result-modal" id="result-modal">
+                <div class="result-title">📊 정산 최종 결과표</div>
+                <div class="result-card">
+                    <div class="result-row"><span>시작 자본금:</span><span id="res-init">0원</span></div>
+                    <div class="result-row"><span>현재 보유금:</span><span id="res-balance">0원</span></div>
+                    <div class="result-row"><span>총 대출금 차감:</span><span id="res-debt" style="color:var(--neon-red);">-0원</span></div>
+                    <div class="result-row final"><span>최종 수령액:</span><span id="res-final" style="color:var(--neon-green);">0원</span></div>
+                </div>
+                <div class="comment-box" id="res-comment">평가 중...</div>
+                <button class="setup-btn" onclick="location.reload()" style="width:200px;">🔄 다시 도전하기</button>
+            </div>
+
+            <!-- 전광판 -->
+            <div class="display-board">
+                <div class="stat-box">
+                    <div class="stat-label">보유 금액</div>
+                    <div class="stat-value" id="balance">0 원</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">누적 대출금</div>
+                    <div class="stat-value debt" id="debt">0 원</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">스핀 횟수</div>
+                    <div class="stat-value" id="spin-count">0</div>
+                </div>
+            </div>
+
+            <!-- 배당 안내 -->
+            <div class="paytable">
+                <div>7️⃣7️⃣7️⃣ <span>100배</span></div>
+                <div>💎💎💎 <span>15배</span></div>
+                <div>🔔/🍋/🍉 <span>3배</span></div>
+                <div>🍒🍒🍒 <span>1.5배</span></div>
+                <div>2개 일치 <span>1.1배</span></div>
+            </div>
+
+            <!-- 릴 영역 -->
+            <div class="reels-frame">
+                <div class="payline-indicator"></div>
+                <div class="reel-window"><div class="reel-strip" id="reel-0"><div class="symbol">🎰</div></div></div>
+                <div class="reel-window"><div class="reel-strip" id="reel-1"><div class="symbol">🎰</div></div></div>
+                <div class="reel-window"><div class="reel-strip" id="reel-2"><div class="symbol">🎰</div></div></div>
+            </div>
+
+            <!-- 컨트롤 영역 -->
+            <div class="controls-panel">
+                <div class="bet-selector">
+                    <button class="bet-btn active" onclick="setBet(10000, this)">10,000원</button>
+                    <button class="bet-btn" onclick="setBet(50000, this)">50,000원</button>
+                    <button class="bet-btn" onclick="setBet(100000, this)">100,000원</button>
+                </div>
+
+                <div class="action-btns">
+                    <button class="spin-btn" id="spin-button" onclick="pullLeverAndSpin()">SPIN!</button>
+                    <button class="loan-btn" onclick="getLoan()">💵 대출 (10만)</button>
+                </div>
+
+                <button class="cashout-btn" onclick="cashOut()">💵 돈 출금 & 정산 완료하기</button>
+            </div>
+
+            <div class="status-message" id="status-msg">시작 자본금을 설정해 주세요.</div>
         </div>
 
-        <!-- 2. 게임 정산 결과 모달 -->
-        <div class="result-modal" id="result-modal">
-            <div class="result-title">📊 정산 최종 결과표</div>
-            <div class="result-card">
-                <div class="result-row"><span>시작 자본금:</span><span id="res-init">0원</span></div>
-                <div class="result-row"><span>현재 보유금:</span><span id="res-balance">0원</span></div>
-                <div class="result-row"><span>총 대출금 차감:</span><span id="res-debt" style="color:var(--neon-red);">-0원</span></div>
-                <div class="result-row final"><span>최종 수령액:</span><span id="res-final" style="color:var(--neon-green);">0원</span></div>
-            </div>
-            <div class="comment-box" id="res-comment">평가 중...</div>
-            <button class="setup-btn" onclick="location.reload()" style="width:200px;">🔄 다시 도전하기</button>
-        </div>
-
-        <!-- 전광판 -->
-        <div class="display-board">
-            <div class="stat-box">
-                <div class="stat-label">보유 금액</div>
-                <div class="stat-value" id="balance">0 원</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-label">누적 대출금</div>
-                <div class="stat-value debt" id="debt">0 원</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-label">스핀 횟수</div>
-                <div class="stat-value" id="spin-count">0</div>
+        <!-- 3D 클래식 레버 (우측 위치) -->
+        <div class="lever-container" onclick="pullLeverAndSpin()">
+            <div class="lever-base"></div>
+            <div class="lever-arm" id="lever-arm">
+                <div class="lever-ball"></div>
             </div>
         </div>
-
-        <!-- 배당 안내 -->
-        <div class="paytable">
-            <div>7️⃣7️⃣7️⃣ <span>100배</span></div>
-            <div>💎💎💎 <span>15배</span></div>
-            <div>🔔/🍋/🍉 <span>3배</span></div>
-            <div>🍒🍒🍒 <span>1.5배</span></div>
-            <div>2개 일치 <span>1.1배</span></div>
-        </div>
-
-        <!-- 릴 영역 -->
-        <div class="reels-frame">
-            <div class="payline-indicator"></div>
-            <div class="reel-window"><div class="reel-strip" id="reel-0"><div class="symbol">🎰</div></div></div>
-            <div class="reel-window"><div class="reel-strip" id="reel-1"><div class="symbol">🎰</div></div></div>
-            <div class="reel-window"><div class="reel-strip" id="reel-2"><div class="symbol">🎰</div></div></div>
-        </div>
-
-        <!-- 컨트롤 영역 (베팅 금액 0 하나 더 붙임) -->
-        <div class="controls-panel">
-            <div class="bet-selector">
-                <button class="bet-btn active" onclick="setBet(10000, this)">10,000원</button>
-                <button class="bet-btn" onclick="setBet(50000, this)">50,000원</button>
-                <button class="bet-btn" onclick="setBet(100000, this)">100,000원</button>
-            </div>
-
-            <div class="action-btns">
-                <button class="spin-btn" id="spin-button" onclick="spin()">SPIN!</button>
-                <button class="loan-btn" onclick="getLoan()">💵 대출 (10만)</button>
-            </div>
-
-            <button class="cashout-btn" onclick="cashOut()">💵 돈 출금 & 정산 완료하기</button>
-        </div>
-
-        <div class="status-message" id="status-msg">시작 자본금을 설정해 주세요.</div>
     </div>
 
     <script>
@@ -497,7 +572,7 @@ casino_html = """
         let balance = 1000000;
         let debt = 0;
         let spins = 0;
-        let currentBet = 10000; // 0 하나 더 붙임
+        let currentBet = 10000;
         let isSpinning = false;
 
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -535,6 +610,13 @@ casino_html = """
                 gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
                 osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+            } else if (type === 'lever') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(180, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(60, audioCtx.currentTime + 0.2);
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.2);
             }
         }
 
@@ -554,7 +636,7 @@ casino_html = """
             spins = 0;
             updateDisplay();
             document.getElementById('setup-modal').style.display = 'none';
-            document.getElementById('status-msg').innerText = "행운을 빕니다! SPIN 버튼을 누르세요.";
+            document.getElementById('status-msg').innerText = "행운을 빕니다! SPIN 버튼이나 레버를 당기세요.";
         }
 
         function setBet(amount, btn) {
@@ -573,7 +655,7 @@ casino_html = """
 
         function getLoan() {
             if (isSpinning) return;
-            const loanAmount = 100000; // 10만원 대출
+            const loanAmount = 100000;
             balance += loanAmount;
             debt += loanAmount;
             updateDisplay();
@@ -610,7 +692,8 @@ casino_html = """
             document.getElementById('result-modal').style.display = 'flex';
         }
 
-        function spin() {
+        // 레버 당기기 연출 + 스핀 실행
+        function pullLeverAndSpin() {
             if (isSpinning) return;
             if (balance < currentBet) {
                 document.getElementById('status-msg').innerText = "❌ 잔액 부족! 대출 버튼을 누르거나 출금하세요.";
@@ -618,6 +701,19 @@ casino_html = """
                 return;
             }
 
+            // 레버 애니메이션
+            const leverArm = document.getElementById('lever-arm');
+            leverArm.classList.add('pulled');
+            playSound('lever');
+
+            setTimeout(() => {
+                leverArm.classList.remove('pulled');
+            }, 300);
+
+            spin();
+        }
+
+        function spin() {
             isSpinning = true;
             balance -= currentBet;
             spins++;
@@ -631,24 +727,24 @@ casino_html = """
             const rand = Math.random();
 
             if (rand < 0.002) { 
-                finalResult = ['7️⃣', '7️⃣', '7️⃣']; // 100배
+                finalResult = ['7️⃣', '7️⃣', '7️⃣'];
             } else if (rand < 0.01) { 
-                finalResult = ['💎', '💎', '💎']; // 15배
+                finalResult = ['💎', '💎', '💎'];
             } else if (rand < 0.025) { 
                 const sym = ['🔔', '🍋', '🍉'][Math.floor(Math.random() * 3)];
-                finalResult = [sym, sym, sym]; // 3배
+                finalResult = [sym, sym, sym];
             } else if (rand < 0.04) { 
-                finalResult = ['🍒', '🍒', '🍒']; // 1.5배
+                finalResult = ['🍒', '🍒', '🍒'];
             } else if (rand < 0.32) { 
                 const sym = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
                 let other = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
                 while (other === sym) other = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
-                finalResult = [sym, sym, other].sort(() => Math.random() - 0.5); // 1.1배
+                finalResult = [sym, sym, other].sort(() => Math.random() - 0.5);
             } else if (rand < 0.70) { 
                 const sym = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
                 let other = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
                 while (other === sym) other = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
-                finalResult = [sym, sym, other]; // 꽝 (아까운 연출)
+                finalResult = [sym, sym, other];
             } else { 
                 let s1 = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
                 let s2 = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
@@ -657,7 +753,7 @@ casino_html = """
                     s2 = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
                     s3 = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
                 }
-                finalResult = [s1, s2, s3]; // 꽝
+                finalResult = [s1, s2, s3];
             }
 
             const reelStrips = [

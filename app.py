@@ -38,7 +38,6 @@ casino_html = """
 
         body {
             background-color: var(--bg-dark);
-            /* 카지노 붉은 융단 바닥 및 네온 조명 분위기 */
             background-image: 
                 radial-gradient(ellipse at 50% 0%, rgba(140, 20, 80, 0.45) 0%, transparent 70%),
                 radial-gradient(circle at 15% 90%, rgba(200, 30, 30, 0.3) 0%, transparent 40%),
@@ -55,7 +54,6 @@ casino_html = """
             overflow-x: hidden;
         }
 
-        /* 3D 슬롯머신 구조체 전체 포장 */
         .machine-wrapper {
             position: relative;
             display: flex;
@@ -66,7 +64,6 @@ casino_html = """
             margin-top: 30px;
         }
 
-        /* 머신 본체 (카지노 슬롯 캐비닛) */
         .machine-container {
             position: relative;
             background: linear-gradient(180deg, #2b1d0e 0%, #150d06 40%, #0d0804 100%);
@@ -84,7 +81,6 @@ casino_html = """
             z-index: 2;
         }
 
-        /* 상단 아치형 전광판 (Marquee Top Header) */
         .marquee-top {
             position: relative;
             width: 110%;
@@ -98,7 +94,6 @@ casino_html = """
             box-shadow: 0 0 25px rgba(255, 215, 0, 0.7), inset 0 2px 10px #fff;
         }
 
-        /* 반짝이는 3개의 별 (Blinking Stars) */
         .star-group {
             position: absolute;
             top: -26px;
@@ -131,7 +126,6 @@ casino_html = """
             text-shadow: 0 1px 0 #fff, 0 -1px 0 #888;
         }
 
-        /* 유리판 인쇄형 페이테이블 */
         .glass-paytable {
             width: 100%;
             background: linear-gradient(180deg, rgba(15, 10, 25, 0.95), rgba(5, 2, 10, 0.98));
@@ -155,8 +149,8 @@ casino_html = """
         }
         .pay-item .syms { display: block; margin-bottom: 2px; }
         .pay-item .mult { color: var(--neon-gold); font-weight: bold; font-family: 'Orbitron', monospace; }
+        .pay-item.highlight { border-color: var(--neon-red); background: rgba(255, 0, 85, 0.15); }
 
-        /* 클래식 사이드 3D 레버 */
         .lever-container {
             position: absolute;
             right: -52px;
@@ -194,7 +188,6 @@ casino_html = """
         }
         .lever-arm.pulled { transform: rotateX(75deg) scaleY(0.5); }
 
-        /* 디지털 LED 전광판 */
         .display-board {
             width: 100%;
             background: #000;
@@ -218,7 +211,6 @@ casino_html = """
         }
         .stat-value.debt { color: var(--neon-red); text-shadow: 0 0 6px rgba(255, 0, 85, 0.8); }
 
-        /* 3D 릴 프레임 (스피닝 영역) */
         .reels-frame {
             background: #000;
             border: 5px solid var(--gold-mid);
@@ -269,7 +261,6 @@ casino_html = """
             filter: drop-shadow(0 4px 6px rgba(0,0,0,0.7));
         }
 
-        /* 컨트롤 영역 */
         .controls-panel {
             width: 100%;
             display: flex;
@@ -346,7 +337,6 @@ casino_html = """
             box-shadow: 0 4px 0 #880000;
         }
 
-        /* 하단 메탈 코인 트레이 (Payout Tray) */
         .coin-tray {
             width: 100%;
             height: 35px;
@@ -375,7 +365,6 @@ casino_html = """
         .win { color: var(--neon-green); }
         .payback { color: var(--neon-blue); }
 
-        /* 초기 및 정산 모달 팝업 */
         .setup-modal, .result-modal {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -413,7 +402,6 @@ casino_html = """
     <div class="machine-wrapper">
         <div class="machine-container">
             
-            <!-- 상단 아치 전광판 & 반짝이는 별 -->
             <div class="marquee-top">
                 <div class="star-group">
                     <i class="fa-solid fa-star star-icon"></i>
@@ -423,19 +411,17 @@ casino_html = """
                 <div class="marquee-title">KING 777 JACKPOT</div>
             </div>
 
-            <!-- 유리판 인쇄형 페이테이블 -->
             <div class="glass-paytable">
                 <div class="pay-item"><span class="syms">7️⃣7️⃣7️⃣</span><span class="mult">100배</span></div>
                 <div class="pay-item"><span class="syms">💎💎💎</span><span class="mult">15배</span></div>
                 <div class="pay-item"><span class="syms">🔔/🍋/🍉</span><span class="mult">3배</span></div>
-                <div class="pay-item"><span class="syms">🍒🍒🍒</span><span class="mult">1.5배</span></div>
+                <div class="pay-item highlight"><span class="syms">🍒🍒🍒</span><span class="mult">1.5배 (20%)</span></div>
                 <div class="pay-item"><span class="syms">2개 일치</span><span class="mult">1.1배</span></div>
                 <div class="pay-item"><span class="syms">🍒 1개</span><span class="mult">0.4배</span></div>
                 <div class="pay-item"><span class="syms">🍋 1개</span><span class="mult">0.2배</span></div>
                 <div class="pay-item"><span class="syms">ALL IN</span><span class="mult">🔥 역전</span></div>
             </div>
 
-            <!-- 1. 초기 자본금 설정 모달 -->
             <div class="setup-modal" id="setup-modal">
                 <div class="setup-title">💰 시작 보유 금액 설정</div>
                 <p style="color:#aaa; font-size:0.8rem; margin-bottom:12px;">시작 자본금을 선택하거나 입력하세요.</p>
@@ -451,7 +437,6 @@ casino_html = """
                 </div>
             </div>
 
-            <!-- 2. 최종 정산 모달 -->
             <div class="result-modal" id="result-modal">
                 <div class="result-title">📊 정산 최종 결과표</div>
                 <div class="result-card">
@@ -466,7 +451,6 @@ casino_html = """
                 <button class="setup-btn" onclick="location.reload()" style="width:180px;">🔄 다시 도전하기</button>
             </div>
 
-            <!-- 디지털 LED 전광판 -->
             <div class="display-board">
                 <div class="stat-box">
                     <div class="stat-label">보유 금액</div>
@@ -482,7 +466,6 @@ casino_html = """
                 </div>
             </div>
 
-            <!-- 릴 영역 -->
             <div class="reels-frame">
                 <div class="payline-indicator"></div>
                 <div class="reel-window"><div class="reel-strip" id="reel-0"><div class="symbol">🎰</div></div></div>
@@ -490,7 +473,6 @@ casino_html = """
                 <div class="reel-window"><div class="reel-strip" id="reel-2"><div class="symbol">🎰</div></div></div>
             </div>
 
-            <!-- 버튼 조작반 -->
             <div class="controls-panel">
                 <div class="bet-selector">
                     <button class="bet-btn active" onclick="setBet(10000, this)">1만</button>
@@ -509,11 +491,9 @@ casino_html = """
 
             <div class="status-message" id="status-msg">시작 자본금을 설정해 주세요.</div>
 
-            <!-- 메탈 코인 트레이 -->
             <div class="coin-tray">CASINO COIN TRAY</div>
         </div>
 
-        <!-- 3D 클래식 레버 -->
         <div class="lever-container" onclick="pullLeverAndSpin()">
             <div class="lever-base"></div>
             <div class="lever-arm" id="lever-arm">
@@ -727,7 +707,7 @@ casino_html = """
             let finalResult = [];
             const rand = Math.random();
 
-            // 🎯 엄격히 제어된 리얼 카지노 확률 분포
+            // 🎯 체리 3개 20% 적용 및 전체 확률 구간 재설정
             if (rand < 0.001) { 
                 // 0.1% 확률 : 777 대박 잭팟 (100배)
                 finalResult = ['7️⃣', '7️⃣', '7️⃣'];
@@ -738,11 +718,11 @@ casino_html = """
                 // 1.7% 확률 : 일반 심볼 트리플 (3배)
                 const sym = ['🔔', '🍋', '🍉'][Math.floor(Math.random() * 3)];
                 finalResult = [sym, sym, sym];
-            } else if (rand < 0.045) { 
-                // 2.0% 확률 : 체리 트리플 (1.5배)
+            } else if (rand < 0.225) { 
+                // 🍒 20.0% 확률 : 체리 3개 (1.5배) - 설정 요청 적용!
                 finalResult = ['🍒', '🍒', '🍒'];
-            } else if (rand < 0.22) { 
-                // 17.5% 확률 : 2개 심볼 일치 (1.1배) -> 3개가 무작위로 다이아로 통일되는 버그 완전 차단
+            } else if (rand < 0.40) { 
+                // 17.5% 확률 : 2개 심볼 일치 (1.1배)
                 const sym = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
                 let other;
                 do {
@@ -750,22 +730,22 @@ casino_html = """
                 } while (other === sym);
                 
                 finalResult = [sym, sym, other].sort(() => Math.random() - 0.5);
-            } else if (rand < 0.40) { 
-                // 18.0% 확률 : 체리 1개 보너스 환급 (0.4배)
+            } else if (rand < 0.50) { 
+                // 10.0% 확률 : 체리 1개 보너스 환급 (0.4배)
                 let nonCherries = SYMBOLS.filter(s => s !== '🍒');
                 let s1 = nonCherries[Math.floor(Math.random() * nonCherries.length)];
                 let s2 = nonCherries[Math.floor(Math.random() * nonCherries.length)];
                 while (s1 === s2) { s2 = nonCherries[Math.floor(Math.random() * nonCherries.length)]; }
                 finalResult = ['🍒', s1, s2].sort(() => Math.random() - 0.5);
             } else if (rand < 0.60) { 
-                // 20.0% 확률 : 레몬 1개 보너스 환급 (0.2배)
+                // 10.0% 확률 : 레몬 1개 보너스 환급 (0.2배)
                 let nonLemons = SYMBOLS.filter(s => s !== '🍋' && s !== '🍒');
                 let s1 = nonLemons[Math.floor(Math.random() * nonLemons.length)];
                 let s2 = nonLemons[Math.floor(Math.random() * nonLemons.length)];
                 while (s1 === s2) { s2 = nonLemons[Math.floor(Math.random() * nonLemons.length)]; }
                 finalResult = ['🍋', s1, s2].sort(() => Math.random() - 0.5);
             } else { 
-                // 40.0% 확률 : 완전 꽝 (서로 다른 심볼)
+                // 40.0% 확률 : 완전 꽝
                 let nonBonus = SYMBOLS.filter(s => s !== '🍒' && s !== '🍋');
                 let s1 = nonBonus[Math.floor(Math.random() * nonBonus.length)];
                 let s2 = nonBonus.filter(s => s !== s1)[Math.floor(Math.random() * (nonBonus.length - 1))];

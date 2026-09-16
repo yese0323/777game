@@ -14,16 +14,15 @@ casino_html = """
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎰 라스베이거스 럭셔리 777 슬롯머신</title>
+    <title>🎰 라스베이거스 카지노 슬롯머신</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --gold-light: #fff2a3;
             --gold-mid: #d4af37;
-            --gold-dark: #aa7c11;
-            --gold-shadow: #5c4100;
-            --bg-dark: #0a0612;
+            --gold-dark: #8a6409;
+            --bg-dark: #07030a;
             --neon-red: #ff0055;
             --neon-green: #00ff66;
             --neon-gold: #ffcc00;
@@ -39,10 +38,12 @@ casino_html = """
 
         body {
             background-color: var(--bg-dark);
+            /* 실제 카지노 붉은 융단 바닥 및 화려한 네온 조명 분위기 연출 */
             background-image: 
-                radial-gradient(circle at 50% 20%, #2a0845 0%, #0a0612 80%),
-                radial-gradient(circle at 20% 80%, #15002a 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, #1d0010 0%, transparent 50%);
+                radial-gradient(ellipse at 50% 0%, rgba(140, 20, 80, 0.45) 0%, transparent 70%),
+                radial-gradient(circle at 15% 90%, rgba(200, 30, 30, 0.3) 0%, transparent 40%),
+                radial-gradient(circle at 85% 90%, rgba(60, 20, 100, 0.4) 0%, transparent 40%),
+                repeating-linear-gradient(45deg, rgba(80, 10, 30, 0.8) 0, rgba(80, 10, 30, 0.8) 15px, rgba(40, 5, 15, 0.9) 15px, rgba(40, 5, 15, 0.9) 30px);
             font-family: 'Noto Sans KR', sans-serif;
             color: #fff;
             min-height: 100vh;
@@ -54,248 +55,203 @@ casino_html = """
             overflow-x: hidden;
         }
 
-        .casino-title {
-            font-family: 'Orbitron', 'Noto Sans KR', sans-serif;
-            font-size: 2.3rem;
-            font-weight: 900;
-            text-align: center;
-            background: linear-gradient(180deg, #fff 0%, var(--gold-mid) 50%, var(--gold-shadow) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
-            margin-bottom: 5px;
-            letter-spacing: 2px;
-        }
-
-        .subtitle {
-            color: var(--gold-light);
-            font-weight: 700;
-            font-size: 0.9rem;
-            text-align: center;
-            margin-bottom: 20px;
-            text-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
-            letter-spacing: 1px;
-        }
-
+        /* 3D 슬롯머신 구조체 전체 포장 */
         .machine-wrapper {
             position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
             width: 100%;
-            max-width: 720px;
+            max-width: 680px;
+            margin-top: 30px;
         }
 
+        /* 머신 본체 (실제 카지노 묵직한 캐비닛 느낌) */
         .machine-container {
             position: relative;
-            background: linear-gradient(145deg, #2c2114, #110b06);
-            border: 8px solid var(--gold-mid);
-            border-image: linear-gradient(to bottom, var(--gold-light), var(--gold-mid), var(--gold-dark)) 1;
-            border-radius: 24px;
+            background: linear-gradient(180deg, #2b1d0e 0%, #150d06 40%, #0d0804 100%);
+            border: 6px solid var(--gold-mid);
+            border-radius: 40px 40px 20px 20px;
             box-shadow: 
-                0 0 40px rgba(212, 175, 55, 0.3),
-                inset 0 0 20px rgba(0,0,0,0.8),
-                0 20px 50px rgba(0,0,0,0.9);
-            padding: 25px 30px;
+                0 0 50px rgba(255, 180, 0, 0.3),
+                inset 0 0 30px rgba(0,0,0,0.9),
+                0 30px 60px rgba(0,0,0,0.95);
+            padding: 25px 25px 15px 25px;
             width: 100%;
-            max-width: 620px;
             display: flex;
             flex-direction: column;
             align-items: center;
             z-index: 2;
         }
 
-        /* 3D 레버 */
+        /* 상단 아치형 전광판 (Marquee Top Header) */
+        .marquee-top {
+            position: relative;
+            width: 110%;
+            background: linear-gradient(180deg, #ffd700, #b8860b 40%, #4a3400 100%);
+            border: 4px solid #fff;
+            border-radius: 120px 120px 15px 15px;
+            padding: 18px 10px 12px 10px;
+            margin-top: -55px;
+            margin-bottom: 15px;
+            text-align: center;
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.7), inset 0 2px 10px #fff;
+        }
+
+        /* 반짝이는 3개의 별 (Blinking Stars) */
+        .star-group {
+            position: absolute;
+            top: -26px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+        }
+
+        .star-icon {
+            font-size: 2rem;
+            color: #fff;
+            text-shadow: 0 0 15px #ff0055, 0 0 25px #ffcc00;
+            animation: blinkStar 0.8s infinite alternate ease-in-out;
+        }
+        .star-icon:nth-child(2) { animation-delay: 0.3s; font-size: 2.6rem; margin-top: -8px; }
+        .star-icon:nth-child(3) { animation-delay: 0.6s; }
+
+        @keyframes blinkStar {
+            from { opacity: 0.4; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1.15); filter: drop-shadow(0 0 10px #fff); }
+        }
+
+        .marquee-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: #111;
+            text-shadow: 0 1px 0 #fff, 0 -1px 0 #888;
+        }
+
+        /* 실물 인쇄형 유리 페이테이블 (Glass Paytable Display) */
+        .glass-paytable {
+            width: 100%;
+            background: linear-gradient(180deg, rgba(15, 10, 25, 0.95), rgba(5, 2, 10, 0.98));
+            border: 2px solid var(--gold-mid);
+            border-radius: 12px;
+            padding: 10px;
+            margin-bottom: 12px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            box-shadow: inset 0 0 15px rgba(252, 211, 77, 0.15);
+        }
+
+        .pay-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 6px;
+            padding: 4px 2px;
+            text-align: center;
+            font-size: 0.75rem;
+        }
+        .pay-item .syms { display: block; margin-bottom: 2px; }
+        .pay-item .mult { color: var(--neon-gold); font-weight: bold; font-family: 'Orbitron', monospace; }
+
+        /* 클래식 사이드 3D 레버 */
         .lever-container {
             position: absolute;
-            right: -55px;
-            top: 140px;
-            width: 60px;
-            height: 280px;
+            right: -52px;
+            top: 170px;
+            width: 55px;
+            height: 270px;
             z-index: 1;
             cursor: pointer;
         }
-
         .lever-base {
             position: absolute;
-            bottom: 30px;
-            left: 0;
-            width: 35px;
-            height: 70px;
-            background: linear-gradient(90deg, #444, #888, #222);
-            border-radius: 0 12px 12px 0;
+            bottom: 30px; left: 0;
+            width: 32px; height: 65px;
+            background: linear-gradient(90deg, #222, #777, #111);
+            border-radius: 0 10px 10px 0;
             border: 2px solid var(--gold-dark);
-            box-shadow: 3px 5px 10px rgba(0,0,0,0.7);
         }
-
         .lever-arm {
             position: absolute;
-            bottom: 60px;
-            left: 10px;
-            width: 16px;
-            height: 180px;
-            background: linear-gradient(90deg, #bbb, #fff, #777);
+            bottom: 55px; left: 8px;
+            width: 16px; height: 170px;
+            background: linear-gradient(90deg, #aaa, #fff, #666);
             border-radius: 8px;
             transform-origin: bottom center;
             transition: transform 0.15s ease-in;
-            box-shadow: 2px 2px 8px rgba(0,0,0,0.5);
         }
-
         .lever-ball {
             position: absolute;
-            top: -25px;
-            left: -17px;
-            width: 50px;
-            height: 50px;
-            background: radial-gradient(circle at 30% 30%, #ff5555, #990000);
+            top: -24px; left: -16px;
+            width: 48px; height: 48px;
+            background: radial-gradient(circle at 30% 30%, #ff4444, #880000);
             border-radius: 50%;
-            box-shadow: inset -3px -3px 8px rgba(0,0,0,0.6), 0 5px 12px rgba(255,0,0,0.5);
-            border: 2px solid #ff9999;
+            border: 2px solid #ffaaaa;
+            box-shadow: 0 4px 10px rgba(255,0,0,0.6);
         }
+        .lever-arm.pulled { transform: rotateX(75deg) scaleY(0.5); }
 
-        .lever-arm.pulled {
-            transform: rotateX(75deg) scaleY(0.5);
-        }
-
-        /* 초기 설정 모달 */
-        .setup-modal {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(10, 6, 18, 0.95);
-            z-index: 100;
-            border-radius: 16px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 30px;
-            text-align: center;
-        }
-
-        .setup-title {
-            font-size: 1.6rem;
-            color: var(--gold-mid);
-            font-weight: 900;
-            margin-bottom: 15px;
-        }
-
-        .setup-input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            width: 100%;
-            max-width: 320px;
-            margin-bottom: 20px;
-        }
-
-        .setup-btn {
-            background: linear-gradient(180deg, var(--gold-mid), var(--gold-dark));
-            color: #000;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            font-weight: 900;
-            font-size: 1.1rem;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(212, 175, 55, 0.4);
-        }
-
-        .preset-btns {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-
-        .preset-btn {
-            background: rgba(255,255,255,0.1);
-            border: 1px solid var(--gold-mid);
-            color: #fff;
-            padding: 8px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        /* 전광판 */
+        /* 디지털 LED 전광판 */
         .display-board {
             width: 100%;
             background: #000;
             border: 3px solid var(--gold-dark);
-            border-radius: 12px;
-            padding: 10px 15px;
-            margin-bottom: 15px;
+            border-radius: 10px;
+            padding: 8px 12px;
+            margin-bottom: 12px;
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
-            gap: 10px;
-            box-shadow: inset 0 0 15px rgba(255, 204, 0, 0.2);
+            gap: 8px;
+            box-shadow: inset 0 0 12px rgba(255, 204, 0, 0.3);
         }
-
         .stat-box { text-align: center; }
-        .stat-label { font-size: 0.7rem; color: #888; margin-bottom: 2px; font-weight: 700; }
+        .stat-label { font-size: 0.68rem; color: #aaa; font-weight: 700; margin-bottom: 2px; }
         .stat-value {
             font-family: 'Orbitron', monospace;
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             font-weight: 700;
             color: var(--neon-gold);
-            text-shadow: 0 0 8px rgba(255, 204, 0, 0.7);
+            text-shadow: 0 0 6px rgba(255, 204, 0, 0.8);
         }
-        .stat-value.debt { color: var(--neon-red); text-shadow: 0 0 8px rgba(255, 0, 85, 0.7); }
+        .stat-value.debt { color: var(--neon-red); text-shadow: 0 0 6px rgba(255, 0, 85, 0.8); }
 
-        /* 배당 안내 */
-        .paytable {
-            width: 100%;
-            background: rgba(0,0,0,0.5);
-            border: 1px solid var(--gold-dark);
-            border-radius: 8px;
-            padding: 8px;
-            margin-bottom: 15px;
-            font-size: 0.72rem;
-            display: flex;
-            justify-content: space-around;
-            text-align: center;
-            color: #ddd;
-            flex-wrap: wrap;
-            gap: 4px;
-        }
-        .paytable span { color: var(--gold-light); font-weight: bold; }
-
-        /* 릴 하우징 */
+        /* 3D 릴 프레임 (스피닝 영역) */
         .reels-frame {
-            background: #050505;
-            border: 4px solid var(--gold-mid);
+            background: #000;
+            border: 5px solid var(--gold-mid);
             border-radius: 16px;
-            padding: 15px;
+            padding: 12px;
             display: flex;
-            gap: 12px;
-            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.95);
+            gap: 10px;
+            box-shadow: inset 0 0 35px rgba(0, 0, 0, 0.95), 0 0 15px rgba(212, 175, 55, 0.4);
             position: relative;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             width: 100%;
             justify-content: center;
         }
-
         .payline-indicator {
             position: absolute;
             left: 0; right: 0; top: 50%;
             transform: translateY(-50%);
-            height: 2px;
-            background: rgba(255, 0, 85, 0.7);
-            box-shadow: 0 0 8px var(--neon-red);
+            height: 3px;
+            background: rgba(255, 0, 85, 0.85);
+            box-shadow: 0 0 10px var(--neon-red);
             z-index: 5;
             pointer-events: none;
         }
-
         .reel-window {
             width: 120px;
-            height: 130px;
-            background: linear-gradient(180deg, #111 0%, #222 50%, #111 100%);
+            height: 125px;
+            background: linear-gradient(180deg, #0a0a0a 0%, #222 50%, #0a0a0a 100%);
             border: 2px solid #444;
-            border-radius: 10px;
+            border-radius: 8px;
             overflow: hidden;
             position: relative;
-            box-shadow: inset 0 10px 20px rgba(0,0,0,0.8), inset 0 -10px 20px rgba(0,0,0,0.8);
+            box-shadow: inset 0 12px 20px rgba(0,0,0,0.9), inset 0 -12px 20px rgba(0,0,0,0.9);
         }
-
         .reel-strip {
             position: absolute;
             top: 0; left: 0; width: 100%;
@@ -303,227 +259,199 @@ casino_html = """
             flex-direction: column;
             align-items: center;
         }
-
         .symbol {
             width: 120px;
-            height: 130px;
+            height: 125px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 3.8rem;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.6));
+            font-size: 3.6rem;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.7));
         }
 
-        /* 베팅 선택 영역 */
+        /* 컨트롤 영역 */
         .controls-panel {
             width: 100%;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
-
         .bet-selector {
             display: flex;
             justify-content: space-between;
-            background: rgba(0,0,0,0.4);
-            padding: 6px;
-            border-radius: 12px;
-            border: 1px solid rgba(212, 175, 55, 0.3);
+            background: rgba(0,0,0,0.5);
+            padding: 5px;
+            border-radius: 10px;
+            border: 1px solid rgba(212, 175, 55, 0.4);
             gap: 6px;
         }
-
         .bet-btn {
             flex: 1;
-            padding: 10px 0;
+            padding: 8px 0;
             background: linear-gradient(180deg, #3a3a3a, #1a1a1a);
             border: 1px solid var(--gold-dark);
-            border-radius: 8px;
+            border-radius: 6px;
             color: #ccc;
             font-family: 'Orbitron', 'Noto Sans KR', sans-serif;
             font-weight: 700;
             font-size: 0.8rem;
             cursor: pointer;
-            transition: all 0.2s;
         }
-
         .bet-btn.active {
             background: linear-gradient(180deg, var(--gold-mid), var(--gold-dark));
             color: #000;
-            border-color: var(--gold-light);
-            box-shadow: 0 0 12px rgba(212, 175, 55, 0.6);
+            border-color: #fff;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.7);
         }
-
-        .bet-btn.all-in-btn {
-            background: linear-gradient(180deg, #ff0055, #990000);
-            border: 1px solid #ff6699;
-            color: #fff;
-            text-shadow: 0 0 4px #000;
-            font-weight: 900;
-        }
-
         .bet-btn.all-in-btn.active {
             background: linear-gradient(180deg, #ff0055, #ffcc00);
             color: #000;
-            border-color: #fff;
-            box-shadow: 0 0 15px rgba(255, 0, 85, 0.9);
-            animation: pulse-allin 0.8s infinite alternate;
+            box-shadow: 0 0 12px rgba(255, 0, 85, 0.9);
         }
 
-        @keyframes pulse-allin {
-            from { transform: scale(1); }
-            to { transform: scale(1.03); }
-        }
-
-        .action-btns {
-            display: flex;
-            gap: 10px;
-        }
-
+        .action-btns { display: flex; gap: 8px; }
         .spin-btn {
             flex: 2;
-            padding: 16px;
+            padding: 14px;
             background: linear-gradient(180deg, #ff4e50, #f9d423);
             border: none;
-            border-radius: 12px;
+            border-radius: 10px;
             color: #000;
             font-weight: 900;
-            font-size: 1.3rem;
+            font-size: 1.25rem;
             cursor: pointer;
-            box-shadow: 0 5px 0 #990000;
+            box-shadow: 0 4px 0 #990000;
         }
-
         .loan-btn {
             flex: 1;
             background: linear-gradient(180deg, #00b09b, #96c93d);
             border: none;
-            border-radius: 12px;
+            border-radius: 10px;
             color: #000;
             font-weight: 900;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             cursor: pointer;
             box-shadow: 0 4px 0 #005522;
         }
-
         .cashout-btn {
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             background: linear-gradient(180deg, #e1eec3, #f05053);
             border: none;
-            border-radius: 12px;
+            border-radius: 10px;
             color: #fff;
             font-weight: 900;
-            font-size: 1.1rem;
+            font-size: 1rem;
             cursor: pointer;
             box-shadow: 0 4px 0 #880000;
-            margin-top: 5px;
+        }
+
+        /* 하단 메탈 코인 트레이 (Payout Tray) */
+        .coin-tray {
+            width: 100%;
+            height: 35px;
+            background: linear-gradient(180deg, #111 0%, #444 50%, #222 100%);
+            border: 3px solid var(--gold-dark);
+            border-radius: 0 0 15px 15px;
+            margin-top: 10px;
+            box-shadow: inset 0 5px 10px #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            color: #777;
+            letter-spacing: 2px;
         }
 
         .status-message {
-            margin-top: 12px;
+            margin-top: 8px;
             text-align: center;
             font-weight: 700;
-            font-size: 1rem;
-            height: 25px;
+            font-size: 0.95rem;
+            height: 22px;
             color: var(--gold-light);
         }
-
         .loss { color: var(--neon-red); }
         .win { color: var(--neon-green); }
         .payback { color: var(--neon-blue); }
 
-        /* 정산 결과 모달 스타일 */
-        .result-modal {
+        /* 초기 및 정산 모달 팝업 */
+        .setup-modal, .result-modal {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(10, 6, 18, 0.98);
-            z-index: 200;
-            border-radius: 16px;
-            display: none;
+            z-index: 100;
+            border-radius: 20px;
+            display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 25px;
             text-align: center;
-            border: 4px solid var(--gold-mid);
         }
-
-        .result-title {
-            font-size: 1.8rem;
-            color: var(--gold-light);
-            font-weight: 900;
-            margin-bottom: 15px;
+        .result-modal { display: none; border: 4px solid var(--gold-mid); z-index: 200; }
+        .setup-title, .result-title { font-size: 1.6rem; color: var(--gold-mid); font-weight: 900; margin-bottom: 12px; }
+        .setup-btn {
+            background: linear-gradient(180deg, var(--gold-mid), var(--gold-dark));
+            color: #000; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 900; font-size: 1rem; cursor: pointer;
         }
-
+        .preset-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+        .preset-btn { background: rgba(255,255,255,0.1); border: 1px solid var(--gold-mid); color: #fff; padding: 6px; border-radius: 6px; cursor: pointer; }
+        
         .result-card {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--gold-dark);
-            border-radius: 12px;
-            padding: 15px;
-            width: 100%;
-            max-width: 380px;
-            margin-bottom: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+            background: rgba(255,255,255,0.05); border: 1px solid var(--gold-dark); border-radius: 10px;
+            padding: 12px; width: 100%; max-width: 360px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px;
         }
-
-        .result-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.95rem;
-            color: #ccc;
-        }
-
-        .result-row.won {
-            color: var(--neon-green);
-            font-weight: bold;
-        }
-
-        .result-row.lost {
-            color: var(--neon-red);
-            font-weight: bold;
-        }
-
-        .result-row.final {
-            border-top: 1px solid #555;
-            padding-top: 8px;
-            font-weight: 900;
-            font-size: 1.15rem;
-        }
-
-        .comment-box {
-            font-size: 1.05rem;
-            font-weight: bold;
-            color: var(--neon-gold);
-            margin-bottom: 20px;
-            line-height: 1.4;
-        }
+        .result-row { display: flex; justify-content: space-between; font-size: 0.9rem; color: #ccc; }
+        .result-row.won { color: var(--neon-green); font-weight: bold; }
+        .result-row.lost { color: var(--neon-red); font-weight: bold; }
+        .result-row.final { border-top: 1px solid #555; padding-top: 6px; font-weight: 900; font-size: 1.1rem; }
     </style>
 </head>
 <body>
 
-    <div class="casino-title">🎰 CASINO 777 🎰</div>
-    <div class="subtitle">🕹️ 우측 레버를 직접 당기거나 SPIN 버튼을 누르세요!</div>
-
     <div class="machine-wrapper">
         <div class="machine-container">
-            <!-- 1. 자본금 설정 모달 -->
+            
+            <!-- 상단 아치 전광판 & 반짝이는 별 -->
+            <div class="marquee-top">
+                <div class="star-group">
+                    <i class="fa-solid fa-star star-icon"></i>
+                    <i class="fa-solid fa-star star-icon"></i>
+                    <i class="fa-solid fa-star star-icon"></i>
+                </div>
+                <div class="marquee-title">KING 777 JACKPOT</div>
+            </div>
+
+            <!-- 유리판 인쇄형 페이테이블 -->
+            <div class="glass-paytable">
+                <div class="pay-item"><span class="syms">7️⃣7️⃣7️⃣</span><span class="mult">100배</span></div>
+                <div class="pay-item"><span class="syms">💎💎💎</span><span class="mult">15배</span></div>
+                <div class="pay-item"><span class="syms">🔔/🍋/🍉</span><span class="mult">3배</span></div>
+                <div class="pay-item"><span class="syms">🍒🍒🍒</span><span class="mult">1.5배</span></div>
+                <div class="pay-item"><span class="syms">2개 일치</span><span class="mult">1.1배</span></div>
+                <div class="pay-item"><span class="syms">🍒 1개</span><span class="mult">0.4배</span></div>
+                <div class="pay-item"><span class="syms">🍋 1개</span><span class="mult">0.2배</span></div>
+                <div class="pay-item"><span class="syms">ALL IN</span><span class="mult">🔥 역전</span></div>
+            </div>
+
+            <!-- 1. 초기 자본금 설정 모달 -->
             <div class="setup-modal" id="setup-modal">
                 <div class="setup-title">💰 시작 보유 금액 설정</div>
-                <p style="color:#aaa; font-size:0.85rem; margin-bottom:15px;">시작할 때 사용할 자본금을 선택하거나 입력하세요.</p>
-                <div class="setup-input-group">
+                <p style="color:#aaa; font-size:0.8rem; margin-bottom:12px;">시작 자본금을 선택하거나 입력하세요.</p>
+                <div style="width:100%; max-width:300px;">
                     <div class="preset-btns">
                         <button class="preset-btn" onclick="setPreset(100000)">10 만원</button>
                         <button class="preset-btn" onclick="setPreset(500000)">50 만원</button>
                         <button class="preset-btn" onclick="setPreset(1000000)">100 만원</button>
                         <button class="preset-btn" onclick="setPreset(5000000)">500 만원</button>
                     </div>
-                    <input type="number" id="init-balance-input" value="1000000" style="padding:10px; border-radius:6px; border:1px solid var(--gold-dark); background:#000; color:#fff; text-align:center; font-size:1.1rem; font-weight:bold;">
-                    <button class="setup-btn" onclick="startGame()">게 임 시 작</button>
+                    <input type="number" id="init-balance-input" value="1000000" style="width:100%; padding:8px; border-radius:6px; border:1px solid var(--gold-dark); background:#000; color:#fff; text-align:center; font-size:1.1rem; font-weight:bold; margin-bottom:12px;">
+                    <button class="setup-btn" style="width:100%;" onclick="startGame()">게 임 시 작</button>
                 </div>
             </div>
 
-            <!-- 2. 게임 정산 결과 모달 -->
+            <!-- 2. 최종 정산 모달 -->
             <div class="result-modal" id="result-modal">
                 <div class="result-title">📊 정산 최종 결과표</div>
                 <div class="result-card">
@@ -534,11 +462,11 @@ casino_html = """
                     <div class="result-row lost"><span>💸 순수 잃은 돈 (-손실):</span><span id="res-lost">-0원</span></div>
                     <div class="result-row final"><span>최종 손익 수령액:</span><span id="res-final">0원</span></div>
                 </div>
-                <div class="comment-box" id="res-comment">평가 중...</div>
-                <button class="setup-btn" onclick="location.reload()" style="width:200px;">🔄 다시 도전하기</button>
+                <div id="res-comment" style="font-weight:bold; color:var(--neon-gold); margin-bottom:15px; font-size:0.95rem;">평가 중...</div>
+                <button class="setup-btn" onclick="location.reload()" style="width:180px;">🔄 다시 도전하기</button>
             </div>
 
-            <!-- 전광판 -->
+            <!-- 디지털 LED 전광판 -->
             <div class="display-board">
                 <div class="stat-box">
                     <div class="stat-label">보유 금액</div>
@@ -554,17 +482,6 @@ casino_html = """
                 </div>
             </div>
 
-            <!-- 배당 안내 -->
-            <div class="paytable">
-                <div>7️⃣7️⃣7️⃣ <span>100배</span></div>
-                <div>💎💎💎 <span>15배</span></div>
-                <div>🔔/🍋/🍉 <span>3배</span></div>
-                <div>🍒🍒🍒 <span>1.5배</span></div>
-                <div>2개 일치 <span>1.1배</span></div>
-                <div>🍒1개 <span>0.4배</span></div>
-                <div>🍋1개 <span>0.2배</span></div>
-            </div>
-
             <!-- 릴 영역 -->
             <div class="reels-frame">
                 <div class="payline-indicator"></div>
@@ -573,7 +490,7 @@ casino_html = """
                 <div class="reel-window"><div class="reel-strip" id="reel-2"><div class="symbol">🎰</div></div></div>
             </div>
 
-            <!-- 컨트롤 영역 -->
+            <!-- 버튼 조작반 -->
             <div class="controls-panel">
                 <div class="bet-selector">
                     <button class="bet-btn active" onclick="setBet(10000, this)">1만</button>
@@ -591,6 +508,9 @@ casino_html = """
             </div>
 
             <div class="status-message" id="status-msg">시작 자본금을 설정해 주세요.</div>
+
+            <!-- 메탈 코인 트레이 -->
+            <div class="coin-tray">CASINO COIN TRAY</div>
         </div>
 
         <!-- 3D 클래식 레버 -->
@@ -627,7 +547,7 @@ casino_html = """
             if (type === 'tick') {
                 osc.type = 'triangle';
                 osc.frequency.setValueAtTime(120, audioCtx.currentTime);
-                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
                 osc.start(); osc.stop(audioCtx.currentTime + 0.05);
             } else if (type === 'win') {
@@ -684,7 +604,7 @@ casino_html = """
             totalLost = 0;
             updateDisplay();
             document.getElementById('setup-modal').style.display = 'none';
-            document.getElementById('status-msg').innerText = "행운을 빕니다! SPIN 버튼이나 레버를 당기세요.";
+            document.getElementById('status-msg').innerText = "행운을 빕니다! 레버를 당기거나 SPIN을 누르세요.";
         }
 
         function setBet(amount, btn) {
@@ -807,40 +727,31 @@ casino_html = """
             let finalResult = [];
             const rand = Math.random();
 
-            // 확률 및 경우의 수 테이블 (0.4배, 0.2배 구원 페이백 포함)
             if (rand < 0.002) { 
-                // 0.2% - 777 (100배)
                 finalResult = ['7️⃣', '7️⃣', '7️⃣'];
             } else if (rand < 0.01) { 
-                // 0.8% - 다이아 3개 (15배)
                 finalResult = ['💎', '💎', '💎'];
             } else if (rand < 0.025) { 
-                // 1.5% - 트리플 (3배)
                 const sym = ['🔔', '🍋', '🍉'][Math.floor(Math.random() * 3)];
                 finalResult = [sym, sym, sym];
             } else if (rand < 0.04) { 
-                // 1.5% - 체리 3개 (1.5배)
                 finalResult = ['🍒', '🍒', '🍒'];
             } else if (rand < 0.25) { 
-                // 21% - 2개 심볼 일치 (1.1배)
                 const sym = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
                 let other = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
                 while (other === sym) other = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
                 finalResult = [sym, sym, other].sort(() => Math.random() - 0.5);
             } else if (rand < 0.45) { 
-                // 20% - [추가] 0.4배 환급 (🍒 체리 1개 포함)
                 let nonCherries = SYMBOLS.filter(s => s !== '🍒');
                 let s1 = nonCherries[Math.floor(Math.random() * nonCherries.length)];
                 let s2 = nonCherries[Math.floor(Math.random() * nonCherries.length)];
                 finalResult = ['🍒', s1, s2].sort(() => Math.random() - 0.5);
             } else if (rand < 0.70) { 
-                // 25% - [추가] 0.2배 환급 (🍋 레몬 1개 포함)
                 let nonLemons = SYMBOLS.filter(s => s !== '🍋' && s !== '🍒');
                 let s1 = nonLemons[Math.floor(Math.random() * nonLemons.length)];
                 let s2 = nonLemons[Math.floor(Math.random() * nonLemons.length)];
                 finalResult = ['🍋', s1, s2].sort(() => Math.random() - 0.5);
             } else { 
-                // 30% - 완전 꽝 (0배)
                 let s1 = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
                 let s2 = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
                 let s3 = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
@@ -889,7 +800,6 @@ casino_html = """
                     let winText = "";
                     let isPayback = false;
 
-                    // 당첨 판정
                     if (finalResult[0] === '7️⃣' && finalResult[1] === '7️⃣' && finalResult[2] === '7️⃣') {
                         winMultiplier = 100;
                         winText = "🎉 GRAND JACKPOT! 777 대박! (100배)";
@@ -953,4 +863,4 @@ casino_html = """
 </html>
 """
 
-components.html(casino_html, height=820, scrolling=False)
+components.html(casino_html, height=860, scrolling=False)

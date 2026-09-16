@@ -415,7 +415,7 @@ casino_html = """
                 <div class="pay-item"><span class="syms">7️⃣7️⃣7️⃣</span><span class="mult">100배</span></div>
                 <div class="pay-item"><span class="syms">💎💎💎</span><span class="mult">15배</span></div>
                 <div class="pay-item"><span class="syms">🔔/🍋/🍉</span><span class="mult">3배</span></div>
-                <div class="pay-item highlight"><span class="syms">🍒🍒🍒</span><span class="mult">1.5배 (20%)</span></div>
+                <div class="pay-item highlight"><span class="syms">🍒🍒🍒</span><span class="mult">1.5배 (10%)</span></div>
                 <div class="pay-item"><span class="syms">2개 일치</span><span class="mult">1.1배</span></div>
                 <div class="pay-item"><span class="syms">🍒 1개</span><span class="mult">0.4배</span></div>
                 <div class="pay-item"><span class="syms">🍋 1개</span><span class="mult">0.2배</span></div>
@@ -707,7 +707,7 @@ casino_html = """
             let finalResult = [];
             const rand = Math.random();
 
-            // 🎯 체리 3개 20% 적용 및 전체 확률 구간 재설정
+            // 🎯 체리 3개 10% 적용 및 난수 구간 업데이트
             if (rand < 0.001) { 
                 // 0.1% 확률 : 777 대박 잭팟 (100배)
                 finalResult = ['7️⃣', '7️⃣', '7️⃣'];
@@ -718,10 +718,10 @@ casino_html = """
                 // 1.7% 확률 : 일반 심볼 트리플 (3배)
                 const sym = ['🔔', '🍋', '🍉'][Math.floor(Math.random() * 3)];
                 finalResult = [sym, sym, sym];
-            } else if (rand < 0.225) { 
-                // 🍒 20.0% 확률 : 체리 3개 (1.5배) - 설정 요청 적용!
+            } else if (rand < 0.125) { 
+                // 🍒 10.0% 확률 : 체리 3개 (1.5배) - 설정 요청 적용!
                 finalResult = ['🍒', '🍒', '🍒'];
-            } else if (rand < 0.40) { 
+            } else if (rand < 0.300) { 
                 // 17.5% 확률 : 2개 심볼 일치 (1.1배)
                 const sym = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
                 let other;
@@ -730,15 +730,15 @@ casino_html = """
                 } while (other === sym);
                 
                 finalResult = [sym, sym, other].sort(() => Math.random() - 0.5);
-            } else if (rand < 0.50) { 
-                // 10.0% 확률 : 체리 1개 보너스 환급 (0.4배)
+            } else if (rand < 0.450) { 
+                // 15.0% 확률 : 체리 1개 보너스 환급 (0.4배)
                 let nonCherries = SYMBOLS.filter(s => s !== '🍒');
                 let s1 = nonCherries[Math.floor(Math.random() * nonCherries.length)];
                 let s2 = nonCherries[Math.floor(Math.random() * nonCherries.length)];
                 while (s1 === s2) { s2 = nonCherries[Math.floor(Math.random() * nonCherries.length)]; }
                 finalResult = ['🍒', s1, s2].sort(() => Math.random() - 0.5);
-            } else if (rand < 0.60) { 
-                // 10.0% 확률 : 레몬 1개 보너스 환급 (0.2배)
+            } else if (rand < 0.600) { 
+                // 15.0% 확률 : 레몬 1개 보너스 환급 (0.2배)
                 let nonLemons = SYMBOLS.filter(s => s !== '🍋' && s !== '🍒');
                 let s1 = nonLemons[Math.floor(Math.random() * nonLemons.length)];
                 let s2 = nonLemons[Math.floor(Math.random() * nonLemons.length)];

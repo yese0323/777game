@@ -27,6 +27,7 @@ casino_html = """
             --neon-red: #ff0055;
             --neon-green: #00ff66;
             --neon-gold: #ffcc00;
+            --neon-blue: #00ccff;
         }
 
         * {
@@ -248,11 +249,13 @@ casino_html = """
             border-radius: 8px;
             padding: 8px;
             margin-bottom: 15px;
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             display: flex;
             justify-content: space-around;
             text-align: center;
             color: #ddd;
+            flex-wrap: wrap;
+            gap: 4px;
         }
         .paytable span { color: var(--gold-light); font-weight: bold; }
 
@@ -426,6 +429,7 @@ casino_html = """
 
         .loss { color: var(--neon-red); }
         .win { color: var(--neon-green); }
+        .payback { color: var(--neon-blue); }
 
         /* 정산 결과 모달 스타일 */
         .result-modal {
@@ -519,7 +523,7 @@ casino_html = """
                 </div>
             </div>
 
-            <!-- 2. 게임 정산 결과 모달 (딴 돈 / 잃은 돈 항목 포함) -->
+            <!-- 2. 게임 정산 결과 모달 -->
             <div class="result-modal" id="result-modal">
                 <div class="result-title">📊 정산 최종 결과표</div>
                 <div class="result-card">
@@ -557,6 +561,8 @@ casino_html = """
                 <div>🔔/🍋/🍉 <span>3배</span></div>
                 <div>🍒🍒🍒 <span>1.5배</span></div>
                 <div>2개 일치 <span>1.1배</span></div>
+                <div>🍒1개 <span>0.4배</span></div>
+                <div>🍋1개 <span>0.2배</span></div>
             </div>
 
             <!-- 릴 영역 -->
@@ -606,7 +612,6 @@ casino_html = """
         let isAllIn = false;
         let isSpinning = false;
 
-        // 딴 돈 / 잃은 돈 기록 변수
         let totalWon = 0;
         let totalLost = 0;
 
@@ -638,6 +643,12 @@ casino_html = """
                 gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
                 osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+            } else if (type === 'payback') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(330, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.15);
             } else if (type === 'loan') {
                 osc.type = 'square';
                 osc.frequency.setValueAtTime(300, audioCtx.currentTime);
@@ -723,7 +734,6 @@ casino_html = """
             document.getElementById('status-msg').className = "status-message";
         }
 
-        /* 딴 돈 / 잃은 돈 명확히 계산하여 출력하는 정산 함수 */
         function cashOut() {
             if (isSpinning) return;
             const finalPayout = balance - debt;
@@ -783,7 +793,6 @@ casino_html = """
         function spin() {
             isSpinning = true;
             
-            // 베팅금 차감 -> 잃은 돈 기록
             const betPlaced = currentBet;
             balance -= betPlaced;
             totalLost += betPlaced;
@@ -798,30 +807,45 @@ casino_html = """
             let finalResult = [];
             const rand = Math.random();
 
+            // 확률 및 경우의 수 테이블 (0.4배, 0.2배 구원 페이백 포함)
             if (rand < 0.002) { 
+                // 0.2% - 777 (100배)
                 finalResult = ['7️⃣', '7️⃣', '7️⃣'];
             } else if (rand < 0.01) { 
+                // 0.8% - 다이아 3개 (15배)
                 finalResult = ['💎', '💎', '💎'];
             } else if (rand < 0.025) { 
+                // 1.5% - 트리플 (3배)
                 const sym = ['🔔', '🍋', '🍉'][Math.floor(Math.random() * 3)];
                 finalResult = [sym, sym, sym];
             } else if (rand < 0.04) { 
+                // 1.5% - 체리 3개 (1.5배)
                 finalResult = ['🍒', '🍒', '🍒'];
-            } else if (rand < 0.32) { 
+            } else if (rand < 0.25) { 
+                // 21% - 2개 심볼 일치 (1.1배)
                 const sym = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
                 let other = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
                 while (other === sym) other = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
                 finalResult = [sym, sym, other].sort(() => Math.random() - 0.5);
+            } else if (rand < 0.45) { 
+                // 20% - [추가] 0.4배 환급 (🍒 체리 1개 포함)
+                let nonCherries = SYMBOLS.filter(s => s !== '🍒');
+                let s1 = nonCherries[Math.floor(Math.random() * nonCherries.length)];
+                let s2 = nonCherries[Math.floor(Math.random() * nonCherries.length)];
+                finalResult = ['🍒', s1, s2].sort(() => Math.random() - 0.5);
             } else if (rand < 0.70) { 
-                const sym = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
-                let other = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
-                while (other === sym) other = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
-                finalResult = [sym, sym, other];
+                // 25% - [추가] 0.2배 환급 (🍋 레몬 1개 포함)
+                let nonLemons = SYMBOLS.filter(s => s !== '🍋' && s !== '🍒');
+                let s1 = nonLemons[Math.floor(Math.random() * nonLemons.length)];
+                let s2 = nonLemons[Math.floor(Math.random() * nonLemons.length)];
+                finalResult = ['🍋', s1, s2].sort(() => Math.random() - 0.5);
             } else { 
+                // 30% - 완전 꽝 (0배)
                 let s1 = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
                 let s2 = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
                 let s3 = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
-                while ((s1 === s2) || (s2 === s3) || (s1 === s3)) {
+                while ((s1 === s2) || (s2 === s3) || (s1 === s3) || s1==='🍒' || s2==='🍒' || s3==='🍒' || s1==='🍋' || s2==='🍋' || s3==='🍋') {
+                    s1 = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
                     s2 = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
                     s3 = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
                 }
@@ -863,7 +887,9 @@ casino_html = """
 
                     let winMultiplier = 0;
                     let winText = "";
+                    let isPayback = false;
 
+                    // 당첨 판정
                     if (finalResult[0] === '7️⃣' && finalResult[1] === '7️⃣' && finalResult[2] === '7️⃣') {
                         winMultiplier = 100;
                         winText = "🎉 GRAND JACKPOT! 777 대박! (100배)";
@@ -878,31 +904,36 @@ casino_html = """
                             winMultiplier = 3;
                             winText = `${finalResult[0]} 트리플 당첨! (3배)`;
                         }
-                    } else {
-                        if (rand < 0.32) {
-                            winMultiplier = 1.1;
-                            winText = "✨ 2개 심볼 연결 보너스! (1.1배)";
-                        }
+                    } else if (finalResult[0] === finalResult[1] || finalResult[1] === finalResult[2] || finalResult[0] === finalResult[2]) {
+                        winMultiplier = 1.1;
+                        winText = "✨ 2개 심볼 연결! (1.1배)";
+                    } else if (finalResult.includes('🍒')) {
+                        winMultiplier = 0.4;
+                        winText = "🍒 체리 보너스 환급! (0.4배)";
+                        isPayback = true;
+                    } else if (finalResult.includes('🍋')) {
+                        winMultiplier = 0.2;
+                        winText = "🍋 레몬 위로금 환급! (0.2배)";
+                        isPayback = true;
                     }
 
                     if (winMultiplier > 0) {
                         const winAmount = Math.floor(betPlaced * winMultiplier);
                         balance += winAmount;
-                        
-                        // 딴 돈 누적 기록
                         totalWon += winAmount;
 
-                        if (winMultiplier >= 3) playSound('win');
-                        else playSound('small_win');
-
-                        document.getElementById('status-msg').innerText = `${winText} (+${winAmount.toLocaleString()}원)`;
-                        document.getElementById('status-msg').className = "status-message win";
-                    } else {
-                        if (finalResult[0] === finalResult[1]) {
-                            document.getElementById('status-msg').innerText = "😱 아깝다! 한 끗 차이로 꽝!";
+                        if (isPayback) {
+                            playSound('payback');
+                            document.getElementById('status-msg').innerText = `${winText} (+${winAmount.toLocaleString()}원 보전)`;
+                            document.getElementById('status-msg').className = "status-message payback";
                         } else {
-                            document.getElementById('status-msg').innerText = "💸 꽝입니다! 다음 스핀에 잭팟을 노려보세요.";
+                            if (winMultiplier >= 3) playSound('win');
+                            else playSound('small_win');
+                            document.getElementById('status-msg').innerText = `${winText} (+${winAmount.toLocaleString()}원)`;
+                            document.getElementById('status-msg').className = "status-message win";
                         }
+                    } else {
+                        document.getElementById('status-msg').innerText = "💸 꽝! (-" + betPlaced.toLocaleString() + "원) 다음 스핀을 노려보세요!";
                         document.getElementById('status-msg').className = "status-message loss";
                     }
 

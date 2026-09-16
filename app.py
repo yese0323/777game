@@ -320,9 +320,15 @@ casino_html = """
             border-radius: 10px;
             color: #000;
             font-weight: 900;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             cursor: pointer;
             box-shadow: 0 4px 0 #005522;
+        }
+        .loan-btn:disabled {
+            background: #555;
+            color: #888;
+            box-shadow: none;
+            cursor: not-allowed;
         }
         .cashout-btn {
             width: 100%;
@@ -411,7 +417,7 @@ casino_html = """
                 <div class="marquee-title">KING 777 JACKPOT</div>
             </div>
 
-            <!-- 배당표 UI (확률 숨김, 종/레몬/수박 2배, 체리 1.4배) -->
+            <!-- 배당표 UI -->
             <div class="glass-paytable">
                 <div class="pay-item"><span class="syms">7️⃣7️⃣7️⃣</span><span class="mult">100배</span></div>
                 <div class="pay-item"><span class="syms">💎💎💎</span><span class="mult">7배</span></div>
@@ -443,7 +449,7 @@ casino_html = """
                 <div class="result-card">
                     <div class="result-row"><span>시작 자본금:</span><span id="res-init">0원</span></div>
                     <div class="result-row"><span>현재 보유금:</span><span id="res-balance">0원</span></div>
-                    <div class="result-row"><span>대출 원금:</span><span id="res-debt">0원</span></div>
+                    <div class="result-row"><span>대출 원금 (최대 50만):</span><span id="res-debt">0원</span></div>
                     <div class="result-row lost"><span>💸 사채 이자 (5%):</span><span id="res-interest">+0원</span></div>
                     <div class="result-row won"><span>🎉 순수 딴 돈 (+수익):</span><span id="res-won">+0원</span></div>
                     <div class="result-row lost"><span>💸 순수 잃은 돈 (-손실):</span><span id="res-lost">-0원</span></div>
@@ -459,7 +465,7 @@ casino_html = """
                     <div class="stat-value" id="balance">0 원</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-label">누적 대출금</div>
+                    <div class="stat-label">누적 대출금 (최대50만)</div>
                     <div class="stat-value debt" id="debt">0 원</div>
                 </div>
                 <div class="stat-box">
@@ -485,7 +491,7 @@ casino_html = """
 
                 <div class="action-btns">
                     <button class="spin-btn" id="spin-button" onclick="pullLeverAndSpin()">SPIN!</button>
-                    <button class="loan-btn" onclick="getLoan()">💵 대출 (10만 + 이자)</button>
+                    <button class="loan-btn" id="loan-button" onclick="getLoan()">💵 대출 (10만, 최대50만)</button>
                 </div>
 
                 <button class="cashout-btn" onclick="cashOut()">💵 돈 출금 & 이자 정산 완료하기</button>
@@ -509,6 +515,7 @@ casino_html = """
         let initialBalance = 1000000;
         let balance = 1000000;
         let debt = 0;
+        const MAX_DEBT = 500000; // 🎯 대출 상한선 50만 원 설정
         let spins = 0;
         let currentBet = 10000;
         let isAllIn = false;
@@ -584,6 +591,7 @@ casino_html = """
             spins = 0;
             totalWon = 0;
             totalLost = 0;
+            document.getElementById('loan-button').disabled = false;
             updateDisplay();
             document.getElementById('setup-modal').style.display = 'none';
             document.getElementById('status-msg').innerText = "행운을 빕니다! 레버를 당기거나 SPIN을 누르세요.";
@@ -627,19 +635,31 @@ casino_html = """
 
         function getLoan() {
             if (isSpinning) return;
+            
+            // 🎯 대출 상한선(50만 원) 체크
+            if (debt >= MAX_DEBT) {
+                document.getElementById('status-msg').innerText = "🚨 대출 한도 초과! (최대 50만 원까지 대출 가능합니다)";
+                document.getElementById('status-msg').className = "status-message loss";
+                return;
+            }
+
             const loanAmount = 100000;
             balance += loanAmount;
-            debt += loanAmount; // 대출 원금 누적
+            debt += loanAmount;
+
+            if (debt >= MAX_DEBT) {
+                document.getElementById('loan-button').disabled = true;
+            }
+
             updateDisplay();
             playSound('loan');
-            document.getElementById('status-msg').innerText = "💵 긴급 대출 100,000원 승인! (최종 정산 시 5% 이자 가산)";
+            document.getElementById('status-msg').innerText = `💵 긴급 대출 10만 원 승인! (현재 누적 빚: ${debt.toLocaleString()}원)`;
             document.getElementById('status-msg').className = "status-message loss";
         }
 
         function cashOut() {
             if (isSpinning) return;
             
-            // 🎯 대출금의 5% 이자 계산 및 총 상환금 산정
             const interest = Math.floor(debt * 0.05);
             const totalDebtWithInterest = debt + interest;
             const finalPayout = balance - totalDebtWithInterest;

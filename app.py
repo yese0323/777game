@@ -149,7 +149,7 @@ casino_html = """
         }
         .pay-item .syms { display: block; margin-bottom: 2px; }
         .pay-item .mult { color: var(--neon-gold); font-weight: bold; font-family: 'Orbitron', monospace; }
-        .pay-item.highlight { border-color: var(--neon-red); background: rgba(255, 0, 85, 0.15); }
+        .pay-item.highlight { border-color: var(--neon-green); background: rgba(0, 255, 102, 0.15); }
 
         .lever-container {
             position: absolute;
@@ -411,15 +411,16 @@ casino_html = """
                 <div class="marquee-title">KING 777 JACKPOT</div>
             </div>
 
+            <!-- 🎯 15.8% 및 꽝 40% 변경 반영 UI 배당표 -->
             <div class="glass-paytable">
-                <div class="pay-item"><span class="syms">7️⃣7️⃣7️⃣</span><span class="mult">100배</span></div>
-                <div class="pay-item"><span class="syms">💎💎💎</span><span class="mult">15배</span></div>
-                <div class="pay-item"><span class="syms">🔔/🍋/🍉</span><span class="mult">3배</span></div>
-                <div class="pay-item highlight"><span class="syms">🍒🍒🍒</span><span class="mult">1.5배 (10%)</span></div>
-                <div class="pay-item"><span class="syms">2개 일치</span><span class="mult">1.1배</span></div>
-                <div class="pay-item"><span class="syms">🍒 1개</span><span class="mult">0.4배</span></div>
-                <div class="pay-item"><span class="syms">🍋 1개</span><span class="mult">0.2배</span></div>
-                <div class="pay-item"><span class="syms">ALL IN</span><span class="mult">🔥 역전</span></div>
+                <div class="pay-item"><span class="syms">7️⃣7️⃣7️⃣</span><span class="mult">100배 (0.2%)</span></div>
+                <div class="pay-item"><span class="syms">💎💎💎</span><span class="mult">7배 (1%)</span></div>
+                <div class="pay-item"><span class="syms">🔔/🍋/🍉</span><span class="mult">1.5배 (5%)</span></div>
+                <div class="pay-item"><span class="syms">🍒🍒🍒</span><span class="mult">1.3배 (10%)</span></div>
+                <div class="pay-item highlight"><span class="syms">2개 일치</span><span class="mult">1.1배 (15.8%)</span></div>
+                <div class="pay-item"><span class="syms">🍒 1개</span><span class="mult">0.4배 (16%)</span></div>
+                <div class="pay-item"><span class="syms">🍋 1개</span><span class="mult">0.2배 (12%)</span></div>
+                <div class="pay-item highlight"><span class="syms">완전 꽝</span><span class="mult">0배 (40%)</span></div>
             </div>
 
             <div class="setup-modal" id="setup-modal">
@@ -707,22 +708,22 @@ casino_html = """
             let finalResult = [];
             const rand = Math.random();
 
-            // 🎯 체리 3개 10% 적용 및 난수 구간 업데이트
-            if (rand < 0.001) { 
-                // 0.1% 확률 : 777 대박 잭팟 (100배)
+            // 🎯 요청 반영: 2개 심볼 일치 (15.8%), 남은 확률 꽝 (40%)
+            if (rand < 0.002) { 
+                // 0.2% : 777 대박 잭팟 (100배)
                 finalResult = ['7️⃣', '7️⃣', '7️⃣'];
-            } else if (rand < 0.008) { 
-                // 0.7% 확률 : 다이아몬드 잭팟 (15배)
+            } else if (rand < 0.012) { 
+                // 1.0% : 다이아몬드 잭팟 (7배)
                 finalResult = ['💎', '💎', '💎'];
-            } else if (rand < 0.025) { 
-                // 1.7% 확률 : 일반 심볼 트리플 (3배)
+            } else if (rand < 0.062) { 
+                // 5.0% : 종, 레몬, 수박 트리플 (1.5배)
                 const sym = ['🔔', '🍋', '🍉'][Math.floor(Math.random() * 3)];
                 finalResult = [sym, sym, sym];
-            } else if (rand < 0.125) { 
-                // 🍒 10.0% 확률 : 체리 3개 (1.5배) - 설정 요청 적용!
+            } else if (rand < 0.162) { 
+                // 10.0% : 체리 3개 (1.3배)
                 finalResult = ['🍒', '🍒', '🍒'];
-            } else if (rand < 0.300) { 
-                // 17.5% 확률 : 2개 심볼 일치 (1.1배)
+            } else if (rand < 0.320) { 
+                // 15.8% 🎯 : 2개 심볼 일치 (1.1배)
                 const sym = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
                 let other;
                 do {
@@ -730,22 +731,22 @@ casino_html = """
                 } while (other === sym);
                 
                 finalResult = [sym, sym, other].sort(() => Math.random() - 0.5);
-            } else if (rand < 0.450) { 
-                // 15.0% 확률 : 체리 1개 보너스 환급 (0.4배)
+            } else if (rand < 0.480) { 
+                // 16.0% : 체리 1개 보너스 환급 (0.4배)
                 let nonCherries = SYMBOLS.filter(s => s !== '🍒');
                 let s1 = nonCherries[Math.floor(Math.random() * nonCherries.length)];
                 let s2 = nonCherries[Math.floor(Math.random() * nonCherries.length)];
                 while (s1 === s2) { s2 = nonCherries[Math.floor(Math.random() * nonCherries.length)]; }
                 finalResult = ['🍒', s1, s2].sort(() => Math.random() - 0.5);
             } else if (rand < 0.600) { 
-                // 15.0% 확률 : 레몬 1개 보너스 환급 (0.2배)
+                // 12.0% : 레몬 1개 보너스 환급 (0.2배)
                 let nonLemons = SYMBOLS.filter(s => s !== '🍋' && s !== '🍒');
                 let s1 = nonLemons[Math.floor(Math.random() * nonLemons.length)];
                 let s2 = nonLemons[Math.floor(Math.random() * nonLemons.length)];
                 while (s1 === s2) { s2 = nonLemons[Math.floor(Math.random() * nonLemons.length)]; }
                 finalResult = ['🍋', s1, s2].sort(() => Math.random() - 0.5);
             } else { 
-                // 40.0% 확률 : 완전 꽝
+                // 40.0% 🎯 : 완전 꽝 (나머지 전액)
                 let nonBonus = SYMBOLS.filter(s => s !== '🍒' && s !== '🍋');
                 let s1 = nonBonus[Math.floor(Math.random() * nonBonus.length)];
                 let s2 = nonBonus.filter(s => s !== s1)[Math.floor(Math.random() * (nonBonus.length - 1))];
@@ -794,15 +795,15 @@ casino_html = """
                         winMultiplier = 100;
                         winText = "🎉 GRAND JACKPOT! 777 대박! (100배)";
                     } else if (finalResult[0] === '💎' && finalResult[1] === '💎' && finalResult[2] === '💎') {
-                        winMultiplier = 15;
-                        winText = "💎 DIAMOND JACKPOT! (15배)";
+                        winMultiplier = 7;
+                        winText = "💎 DIAMOND JACKPOT! (7배)";
                     } else if (finalResult[0] === finalResult[1] && finalResult[1] === finalResult[2]) {
                         if (finalResult[0] === '🍒') {
-                            winMultiplier = 1.5;
-                            winText = "🍒 체리 3개 당첨! (1.5배)";
+                            winMultiplier = 1.3;
+                            winText = "🍒 체리 3개 당첨! (1.3배)";
                         } else {
-                            winMultiplier = 3;
-                            winText = `${finalResult[0]} 트리플 당첨! (3배)`;
+                            winMultiplier = 1.5;
+                            winText = `${finalResult[0]} 트리플 당첨! (1.5배)`;
                         }
                     } else if (finalResult[0] === finalResult[1] || finalResult[1] === finalResult[2] || finalResult[0] === finalResult[2]) {
                         winMultiplier = 1.1;

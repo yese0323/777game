@@ -1,14 +1,3 @@
-import streamlit as st
-import streamlit.components.v1 as components
-
-st.set_page_config(
-    page_title="🎰 라스베이거스 777 카지노 슬롯머신",
-    page_icon="🎰",
-    layout="wide",
-    initial_sidebar_state="collapsed"
-)
-
-casino_html = """
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -27,6 +16,7 @@ casino_html = """
             --neon-red: #ff0055;
             --neon-green: #00ff66;
             --neon-gold: #ffcc00;
+            --neon-orange: #ff5500;
         }
 
         * {
@@ -76,7 +66,6 @@ casino_html = """
             letter-spacing: 1px;
         }
 
-        /* 슬롯 머신 전체 래퍼 (레버 배치를 위해 relative) */
         .machine-wrapper {
             position: relative;
             display: flex;
@@ -86,7 +75,6 @@ casino_html = """
             max-width: 720px;
         }
 
-        /* 머신 본체 */
         .machine-container {
             position: relative;
             background: linear-gradient(145deg, #2c2114, #110b06);
@@ -99,14 +87,13 @@ casino_html = """
                 0 20px 50px rgba(0,0,0,0.9);
             padding: 25px 30px;
             width: 100%;
-            max-width: 620px;
+            max-width: 640px;
             display: flex;
             flex-direction: column;
             align-items: center;
             z-index: 2;
         }
 
-        /* === 아케이드 3D 레버 컴포넌트 === */
         .lever-container {
             position: absolute;
             right: -55px;
@@ -154,12 +141,10 @@ casino_html = """
             border: 2px solid #ff9999;
         }
 
-        /* 레버 당기는 애니메이션 클래스 */
         .lever-arm.pulled {
             transform: rotateX(75deg) scaleY(0.5);
         }
 
-        /* 초기 설정 모달 */
         .setup-modal {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -218,7 +203,6 @@ casino_html = """
             font-weight: bold;
         }
 
-        /* 전광판 */
         .display-board {
             width: 100%;
             background: #000;
@@ -243,7 +227,6 @@ casino_html = """
         }
         .stat-value.debt { color: var(--neon-red); text-shadow: 0 0 8px rgba(255, 0, 85, 0.7); }
 
-        /* 배당표 */
         .paytable {
             width: 100%;
             background: rgba(0,0,0,0.5);
@@ -259,7 +242,6 @@ casino_html = """
         }
         .paytable span { color: var(--gold-light); font-weight: bold; }
 
-        /* 릴 하우징 */
         .reels-frame {
             background: #050505;
             border: 4px solid var(--gold-mid);
@@ -314,7 +296,6 @@ casino_html = """
             filter: drop-shadow(0 4px 8px rgba(0,0,0,0.6));
         }
 
-        /* 컨트롤 영역 */
         .controls-panel {
             width: 100%;
             display: flex;
@@ -323,8 +304,9 @@ casino_html = """
         }
 
         .bet-selector {
-            display: flex;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
             background: rgba(0,0,0,0.4);
             padding: 8px;
             border-radius: 12px;
@@ -332,18 +314,21 @@ casino_html = """
         }
 
         .bet-btn {
-            flex: 1;
-            margin: 0 4px;
             padding: 10px 0;
             background: linear-gradient(180deg, #3a3a3a, #1a1a1a);
             border: 1px solid var(--gold-dark);
             border-radius: 8px;
             color: #ccc;
-            font-family: 'Orbitron', sans-serif;
+            font-family: 'Orbitron', 'Noto Sans KR', sans-serif;
             font-weight: 700;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             cursor: pointer;
             transition: all 0.2s;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
         .bet-btn.active {
@@ -351,6 +336,26 @@ casino_html = """
             color: #000;
             border-color: var(--gold-light);
             box-shadow: 0 0 12px rgba(212, 175, 55, 0.6);
+        }
+
+        .bet-btn.all-in-btn {
+            background: linear-gradient(180deg, #ff2a00, #990000);
+            border: 1px solid var(--neon-red);
+            color: #fff;
+            text-shadow: 0 0 5px #000;
+        }
+
+        .bet-btn.all-in-btn.active {
+            background: linear-gradient(180deg, #ff0055, #ff5500);
+            color: #fff;
+            border-color: #ffffff;
+            box-shadow: 0 0 15px var(--neon-red), 0 0 25px var(--neon-orange);
+            animation: pulse-all-in 1s infinite alternate;
+        }
+
+        @keyframes pulse-all-in {
+            0% { transform: scale(1); box-shadow: 0 0 12px var(--neon-red); }
+            100% { transform: scale(1.03); box-shadow: 0 0 22px var(--neon-orange), 0 0 10px #fff; }
         }
 
         .action-btns {
@@ -369,6 +374,13 @@ casino_html = """
             font-size: 1.3rem;
             cursor: pointer;
             box-shadow: 0 5px 0 #990000;
+        }
+
+        .spin-btn:disabled {
+            filter: grayscale(0.8);
+            opacity: 0.6;
+            cursor: not-allowed;
+            box-shadow: none;
         }
 
         .loan-btn {
@@ -409,7 +421,6 @@ casino_html = """
         .loss { color: var(--neon-red); }
         .win { color: var(--neon-green); }
 
-        /* 정산 결과 모달 */
         .result-modal {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -474,9 +485,8 @@ casino_html = """
     <div class="subtitle">🕹️ 우측 레버를 직접 당기거나 SPIN 버튼을 누르세요!</div>
 
     <div class="machine-wrapper">
-        <!-- 메인 슬롯머신 -->
         <div class="machine-container">
-            <!-- 1. 초기 자본금 설정 모달 -->
+            <!-- 초기 자본금 설정 모달 -->
             <div class="setup-modal" id="setup-modal">
                 <div class="setup-title">💰 시작 보유 금액 설정</div>
                 <p style="color:#aaa; font-size:0.85rem; margin-bottom:15px;">시작할 때 사용할 자본금을 선택하거나 입력하세요.</p>
@@ -492,7 +502,7 @@ casino_html = """
                 </div>
             </div>
 
-            <!-- 2. 게임 정산 결과 모달 -->
+            <!-- 게임 정산 결과 모달 -->
             <div class="result-modal" id="result-modal">
                 <div class="result-title">📊 정산 최종 결과표</div>
                 <div class="result-card">
@@ -541,9 +551,13 @@ casino_html = """
             <!-- 컨트롤 영역 -->
             <div class="controls-panel">
                 <div class="bet-selector">
-                    <button class="bet-btn active" onclick="setBet(10000, this)">10,000원</button>
-                    <button class="bet-btn" onclick="setBet(50000, this)">50,000원</button>
-                    <button class="bet-btn" onclick="setBet(100000, this)">100,000원</button>
+                    <button class="bet-btn active" id="bet-btn-10k" onclick="setBet(10000, this)">10,000원</button>
+                    <button class="bet-btn" id="bet-btn-50k" onclick="setBet(50000, this)">50,000원</button>
+                    <button class="bet-btn" id="bet-btn-100k" onclick="setBet(100000, this)">100,000원</button>
+                    <button class="bet-btn all-in-btn" id="bet-btn-allin" onclick="setAllIn(this)">
+                        <span>🔥 ALL IN</span>
+                        <span id="allin-label" style="font-size: 0.65rem; opacity: 0.9;">전액</span>
+                    </button>
                 </div>
 
                 <div class="action-btns">
@@ -557,7 +571,7 @@ casino_html = """
             <div class="status-message" id="status-msg">시작 자본금을 설정해 주세요.</div>
         </div>
 
-        <!-- 3D 클래식 레버 (우측 위치) -->
+        <!-- 3D 레버 -->
         <div class="lever-container" onclick="pullLeverAndSpin()">
             <div class="lever-base"></div>
             <div class="lever-arm" id="lever-arm">
@@ -573,6 +587,7 @@ casino_html = """
         let debt = 0;
         let spins = 0;
         let currentBet = 10000;
+        let isAllInMode = false;
         let isSpinning = false;
 
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -617,6 +632,14 @@ casino_html = """
                 gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
                 osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+            } else if (type === 'allin') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(400, audioCtx.currentTime + 0.1);
+                osc.frequency.setValueAtTime(800, audioCtx.currentTime + 0.2);
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.35);
             }
         }
 
@@ -627,13 +650,14 @@ casino_html = """
         function startGame() {
             const val = parseInt(document.getElementById('init-balance-input').value);
             if (isNaN(val) || val <= 0) {
-                alert("올바른 금액을 입력하세요!");
                 return;
             }
             initialBalance = val;
             balance = val;
             debt = 0;
             spins = 0;
+            isAllInMode = false;
+            currentBet = 10000;
             updateDisplay();
             document.getElementById('setup-modal').style.display = 'none';
             document.getElementById('status-msg').innerText = "행운을 빕니다! SPIN 버튼이나 레버를 당기세요.";
@@ -641,16 +665,49 @@ casino_html = """
 
         function setBet(amount, btn) {
             if (isSpinning) return;
+            isAllInMode = false;
             currentBet = amount;
             document.querySelectorAll('.bet-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
+            document.getElementById('allin-label').innerText = "전액";
             playSound('tick');
+        }
+
+        function setAllIn(btn) {
+            if (isSpinning) return;
+            if (balance <= 0) {
+                document.getElementById('status-msg').innerText = "❌ 올인 불가! 먼저 대출을 받아 잔액을 채우세요.";
+                document.getElementById('status-msg').className = "status-message loss";
+                return;
+            }
+            isAllInMode = true;
+            currentBet = balance;
+            document.querySelectorAll('.bet-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            updateAllInLabel();
+            playSound('allin');
+            document.getElementById('status-msg').innerText = `🔥 ALL IN! 전액(${balance.toLocaleString()}원)을 배팅합니다!`;
+            document.getElementById('status-msg').className = "status-message loss";
+        }
+
+        function updateAllInLabel() {
+            const label = document.getElementById('allin-label');
+            if (isAllInMode && balance > 0) {
+                label.innerText = balance.toLocaleString() + '원';
+            } else {
+                label.innerText = "전액";
+            }
         }
 
         function updateDisplay() {
             document.getElementById('balance').innerText = balance.toLocaleString() + ' 원';
             document.getElementById('debt').innerText = debt.toLocaleString() + ' 원';
             document.getElementById('spin-count').innerText = spins;
+            
+            if (isAllInMode) {
+                currentBet = balance;
+                updateAllInLabel();
+            }
         }
 
         function getLoan() {
@@ -692,16 +749,25 @@ casino_html = """
             document.getElementById('result-modal').style.display = 'flex';
         }
 
-        // 레버 당기기 연출 + 스핀 실행
         function pullLeverAndSpin() {
             if (isSpinning) return;
-            if (balance < currentBet) {
-                document.getElementById('status-msg').innerText = "❌ 잔액 부족! 대출 버튼을 누르거나 출금하세요.";
+
+            if (isAllInMode) {
+                currentBet = balance;
+            }
+
+            if (balance <= 0 || currentBet <= 0) {
+                document.getElementById('status-msg').innerText = "❌ 잔액 부족! 대출 버튼을 누르거나 돈을 획득하세요.";
                 document.getElementById('status-msg').className = "status-message loss";
                 return;
             }
 
-            // 레버 애니메이션
+            if (balance < currentBet) {
+                document.getElementById('status-msg').innerText = "❌ 잔액이 지정 배팅금액보다 적습니다!";
+                document.getElementById('status-msg').className = "status-message loss";
+                return;
+            }
+
             const leverArm = document.getElementById('lever-arm');
             leverArm.classList.add('pulled');
             playSound('lever');
@@ -715,12 +781,13 @@ casino_html = """
 
         function spin() {
             isSpinning = true;
-            balance -= currentBet;
+            const spinBetAmount = currentBet;
+            balance -= spinBetAmount;
             spins++;
             updateDisplay();
 
             document.getElementById('spin-button').disabled = true;
-            document.getElementById('status-msg').innerText = "🎰 릴 회전 중...";
+            document.getElementById('status-msg').innerText = isAllInMode ? "🔥 ALL IN!! 릴 회전 중..." : "🎰 릴 회전 중...";
             document.getElementById('status-msg').className = "status-message";
 
             let finalResult = [];
@@ -814,7 +881,7 @@ casino_html = """
                     }
 
                     if (winMultiplier > 0) {
-                        const winAmount = Math.floor(currentBet * winMultiplier);
+                        const winAmount = Math.floor(spinBetAmount * winMultiplier);
                         balance += winAmount;
                         
                         if (winMultiplier >= 3) playSound('win');
@@ -830,6 +897,10 @@ casino_html = """
                         }
                         document.getElementById('status-msg').className = "status-message loss";
                     }
+
+                    if (isAllInMode && balance > 0) {
+                        currentBet = balance;
+                    }
                     updateDisplay();
                 }
             }, 60);
@@ -837,6 +908,3 @@ casino_html = """
     </script>
 </body>
 </html>
-"""
-
-components.html(casino_html, height=820, scrolling=False)
